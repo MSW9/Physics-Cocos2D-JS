@@ -25,7 +25,6 @@
         "src/Physics/CCPhysicsWorld.js",
         "src/Physics/CCPhysicsContact.js",
         "src/PhysicsTest.js",
-        "src/Test/LogoSmash.js",
         "src/Resource.js"
     ]
 }

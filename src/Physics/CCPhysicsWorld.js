@@ -137,6 +137,7 @@ cc.PhysicsWorld = cc.Class.extend
 		this._debugDraw.setVisible ( false );
 		this._scene.addChild ( this._debugDraw, 1 );	
 		
+		// Temporary Code
 		return true;
 		
 		this._info.getSpace ( ).setDefaultCollisionHandler 
