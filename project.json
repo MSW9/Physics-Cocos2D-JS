@@ -1,0 +1,30 @@
+{
+    "project_type":"javascript",
+    "debugMode":1,
+    "showFPS":true,
+    "frameRate":60,
+    "id":"gameCanvas",
+    "renderMode":0,
+    "engineDir":"frameworks/cocos2d-html5",
+    "modules":[
+        "cocos2d"
+    ],
+    "jsList":[
+        "src/Base/CCNodeEx.js",
+        "src/Base/CCSpriteEx.js",
+        "src/Base/CCSceneEx.js",
+        "src/Physics/Chipmunk/CCPhysicsBodyInfo_chipmunk.js",
+        "src/Physics/Chipmunk/CCPhysicsShapeInfo_chipmunk.js",
+        "src/Physics/Chipmunk/CCPhysicsJointInfo_chipmunk.js",
+        "src/Physics/Chipmunk/CCPhysicsWorldInfo_chipmunk.js",
+        "src/Physics/Chipmunk/CCPhysicsContactInfo_chipmunk.js",
+        "src/Physics/CCPhysicsShape.js",
+        "src/Physics/CCPhysicsBody.js",
+        "src/Physics/CCPhysicsJoint.js",
+        "src/Physics/CCPhysicsWorld.js",
+        "src/Physics/CCPhysicsContact.js",
+        "src/PhysicsTest.js",
+        "src/Test/LogoSmash.js",
+        "src/Resource.js"
+    ]
+}
