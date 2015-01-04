@@ -41,31 +41,34 @@ var BASE_TEST_SUBTITLE_TAG 			= 12;
 msw.PhysicTestScene = cc.SceneEx.extend 
 ({
 	ctor:function ( ) 
-	{
-		this._title 	= "";
-		this._subtitle 	= "";
-		
+	{		
 		this._super ( );
 		
-		var 	label = new cc.LabelTTF ( this._title, "Arial", 28 );
+		this._debugDraw = false;
+		this._spriteTexture = new cc.SpriteBatchNode ( "res/grossini_dance_atlas.png", 100 ).getTexture ( );
+
+		var 	label = new cc.LabelTTF ( this.getTitle ( ), "Arial", 28 );
 		this.addChild ( label, 100, BASE_TEST_TITLE_TAG );
 		label.x = SCR_W2;
 		label.y = SCR_H - 50;
-		
-		var 	label = new cc.LabelTTF ( this._subtitle, "Thonburi", 16 );
+
+		var 	label = new cc.LabelTTF ( this.getSubTitle ( ), "Thonburi", 16 );
 		this.addChild ( label, 101, BASE_TEST_SUBTITLE_TAG );
 		label.x = SCR_W2;
 		label.y = SCR_H - 80;		
 		
+		cc.MenuItemFont.setFontSize ( 18 );
+		
 		var 	item1 = new cc.MenuItemImage ( "res/b1.png", "res/b2.png", this.onBackCallback   , this );
 		var 	item2 = new cc.MenuItemImage ( "res/r1.png", "res/r2.png", this.onRestartCallback, this );
-		var 	item3 = new cc.MenuItemImage ( "res/f1.png", "res/f2.png", this.onNextCallback   , this );
+		var 	item3 = new cc.MenuItemImage ( "res/f1.png", "res/f2.png", this.onNextCallback   , this );		
+		var		item4 = new cc.MenuItemFont  ( "Toggle debug", this.toggleDebug, this );
 		
 		item1.tag = BASE_TEST_MENUITEM_PREV_TAG;
 		item2.tag = BASE_TEST_MENUITEM_RESET_TAG;
 		item3.tag = BASE_TEST_MENUITEM_NEXT_TAG;
-		
-		var 	menu = new cc.Menu ( item1, item2, item3 );
+
+		var 	menu = new cc.Menu ( item1, item2, item3, item4 );
 		
 		menu.x = 0;
 		menu.y = 0;
@@ -77,8 +80,20 @@ msw.PhysicTestScene = cc.SceneEx.extend
 		item2.y = height;
 		item3.x = SCR_W2 + width * 2;
 		item3.y = height;
+		item4.x = SCR_W - 80;
+		item4.y = SCR_H - 20;
 		
 		this.addChild ( menu, 102, BASE_TEST_MENU_TAG );
+	},
+	
+	getTitle:function ( )
+	{
+		return "PhysicsTest";
+	},
+	
+	getSubTitle:function ( )
+	{
+		return "";
 	},
 	
 	onRestartCallback:function ( sender )
@@ -98,6 +113,12 @@ msw.PhysicTestScene = cc.SceneEx.extend
 		msw.PhysicTestIndex = ( msw.PhysicTestIndex == 0 ? msw.PhysicTest.length : msw.PhysicTestIndex ) - 1;		
 		msw.PhysicTestScene.runThisTest ( );
 	},	
+	
+	toggleDebug:function ( sender )
+	{
+	    this._debugDraw = !this._debugDraw;
+	    this.getPhysicsWorld ( ).setDebugDrawMask ( this._debugDraw ? cc.PhysicsWorld.DEBUGDRAW_ALL : cc.PhysicsWorld.DEBUGDRAW_NONE );
+	},
 });
 
 msw.PhysicTestScene.runThisTest = function ( )

@@ -137,6 +137,8 @@ cc.PhysicsWorld = cc.Class.extend
 		this._debugDraw.setVisible ( false );
 		this._scene.addChild ( this._debugDraw, 1 );	
 		
+		return true;
+		
 		this._info.getSpace ( ).setDefaultCollisionHandler 
 		(
 			cc.PhysicsWorldCallback.collisionBeginCallbackFunc	  .bind ( this ),
@@ -617,7 +619,7 @@ cc.PhysicsWorld = cc.Class.extend
 			{
 				var 	dt = this._updateTime * this._speed / this._substeps;
 				for ( var i = 0; i < this._substeps; ++i )
-				{
+				{					
 					this._info.step ( dt );
 					for ( var idx in this._bodies )
 					{
@@ -667,7 +669,7 @@ cc.PhysicsWorld = cc.Class.extend
 
 	    // bitmask check
 	    if ( ( shapeA.getCategoryBitmask ( ) & shapeB.getContactTestBitmask ( ) ) == 0 ||
-	    		( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
+	    	 ( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
 	    {
 	        contact.setNotificationEnable ( false );
 	    }

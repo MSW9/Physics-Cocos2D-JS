@@ -30,7 +30,7 @@ cc.SceneEx = cc.Scene.extend
 		cc.Scene.prototype.ctor.call ( this );
 	
 		this._physicsWorld = null;
-		
+
 		this.initWithPhysics ( );
 	},
 	

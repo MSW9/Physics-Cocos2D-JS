@@ -126,7 +126,7 @@ cc.NodeEx = cc.Node.extend
 			this._physicsBody.removeFromWorld ( );
 		}
 		
-		cc.Scene.prototype.onExit.call ( this );		
+		cc.Node.prototype.onExit.call ( this );		
 	},
 
 	updatePhysicsBodyTransform:function ( scene )
@@ -186,7 +186,7 @@ cc.NodeEx = cc.Node.extend
 		{
 			var		child = this._children [ idx ];
 			// temporary code
-			if ( child instanceof cc.SpriteEx || child instanceof cc.NodeEx )
+			if ( child instanceof cc.SpriteEx || child instanceof cc.NodeEx  )
 			{
 				child.updatePhysicsBodyRotation ( scene );
 			}
@@ -218,7 +218,7 @@ cc.NodeEx = cc.Node.extend
 		{
 			var		child = this._children [ idx ];
 			// temporary code
-			if ( child instanceof cc.SpriteEx || child instanceof cc.NodeEx )
+			if ( child instanceof cc.SpriteEx || child instanceof cc.NodeEx  )
 			{
 				child.updatePhysicsBodyScale ( scene );
 			}

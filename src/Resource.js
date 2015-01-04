@@ -35,4 +35,6 @@ msw.RESOURCES =
 	"res/r1.png",
 	"res/f1.png",
 	"res/f2.png",	 
+	"res/ball.png",
+	"res/grossini_dance_atlas.png"
 ];

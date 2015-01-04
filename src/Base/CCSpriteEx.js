@@ -122,7 +122,7 @@ cc.SpriteEx = cc.Sprite.extend
 			this._physicsBody.removeFromWorld ( );
 		}
 		
-		cc.Scene.prototype.onExit.call ( this );		
+		cc.Sprite.prototype.onExit.call ( this );		
 	},
 
 	updatePhysicsBodyTransform:function ( scene )
@@ -205,8 +205,7 @@ cc.SpriteEx = cc.Sprite.extend
 				this._physicsBody.setScale ( scaleX, scaleY );
 			}
 			else
-			{	
-				cc.log ( this.scaleX + ", " + this._physicsScaleStartX + ", " + this.scaleY + ", " + this._physicsScaleStartY );
+			{		
 				this._physicsBody.setScale ( this.scaleX / this._physicsScaleStartX, this.scaleY / this._physicsScaleStartY );
 			}
 		}
