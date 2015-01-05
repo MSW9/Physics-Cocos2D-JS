@@ -200,7 +200,8 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		var 	sp = new cc.Sprite ( this._spriteTexture, cc.rect ( posx, posy, 85, 121 ) );
 		sp.setScale ( scale );
 		sp.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( 48.0 * scale, 108.0 * scale ) ) );
-		this._scene.addChild ( sp );
+//		this.addChild ( sp );
+		this.addChildEx ( sp );
 		sp.setPosition ( p );
 
 		return sp;
@@ -298,6 +299,7 @@ PhysicsDemoLogoSmash = ( function ( )
 						ball.getPhysicsBody ( ).setMoment ( cc.PHYSICS_INFINITY );
 
 //						this._ball.addChild ( ball );
+//						this._ball.addChildEx ( ball );
 						this._scene.addChild ( ball );
 					}
 				}
@@ -307,7 +309,8 @@ PhysicsDemoLogoSmash = ( function ( )
 			bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 200, 0 ) );	   
 			bullet.setPosition ( cp.v ( -500, VisibleRect.center ( ).y ) );	    
 //			this._ball.addChild ( bullet );
-			this._scene.addChild ( bullet );					
+//			this._ball.addChildEx ( bullet );	
+			this._scene.addChild ( bullet );
 		},		
 	});
 }) ( );
@@ -328,7 +331,8 @@ PhysicsDemoPyramidStack = PhysicsBaseLayer.extend
 
 		var 	node = new cc.Node ( );
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
-		this._scene.addChild ( node );
+//		this.addChild ( node );
+		this.addChildEx ( node );
 
 		var 	ball = new cc.Sprite ( "res/Images/ball.png" );
 		ball.setScale ( 1 );
@@ -336,8 +340,9 @@ PhysicsDemoPyramidStack = PhysicsBaseLayer.extend
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( 10 ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.setPosition ( cp.v.add ( VisibleRect.bottom ( ), cp.v ( 0, 60 ) ) );
-		this._scene.addChild ( ball, 0, 100 );
-
+//		this.addChild ( ball, 0, 100 );		
+		this.addChildEx ( ball, 0, 100 );
+		
 		for ( var i = 0; i < 14; i++ )
 		{
 			for ( var j = 0; j <= i; j++ )
@@ -355,7 +360,7 @@ PhysicsDemoPyramidStack = PhysicsBaseLayer.extend
 	
 	updateOnce:function ( )
 	{
-		var 	ball = this._scene.getChildByTag ( 100 );
+		var 	ball = this.getChildByTag ( 100 );
 
 		ball.setScale ( ball.getScale ( ) * 3 );
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( 30 ) );
@@ -380,7 +385,8 @@ PhysicsDemoClickAdd = PhysicsBaseLayer.extend
 		var 	node = new cc.Node ( );
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( cc.size ( VisibleRect.getVisibleRect ( ).width, VisibleRect.getVisibleRect ( ).height ) ) );
 		node.setPosition ( VisibleRect.center ( ) );
-		this._scene.addChild ( node );
+//		this.addChild ( node );
+		this.addChildEx ( node );
 
 		this.addGrossiniAtPosition ( VisibleRect.center ( ) );
 

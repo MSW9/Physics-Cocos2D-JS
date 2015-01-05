@@ -49,7 +49,7 @@ cc.Scene.prototype.update = function ( delta )
 cc.Scene.prototype.addChild = function ( child, localZOrder, tag )
 {
 	if ( localZOrder === undefined ) localZOrder = 0;
-	if ( tag === undefined ) tag = 0;
+	if ( tag 		 === undefined ) tag = 0;
 	
 	cc.Node.prototype.addChild.call ( this, child, localZOrder, tag );
 	

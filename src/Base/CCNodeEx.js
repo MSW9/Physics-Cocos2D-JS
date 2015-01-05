@@ -212,39 +212,21 @@ cc.Node.prototype.getScene = function ( )
 	}		
 },
 
-cc.Node.prototype._addChildHelper = function ( child, localZOrder, tag, name, setTag )
+cc.Node.prototype.addChildEx = function ( child, localZOrder, tag )
 {
-	if(!this._children)
-		this._children = [];
-
-	this._insertChild(child, localZOrder);
-	if(setTag)
-		child.setTag(tag);
-	else
-		child.setName(name);
-
-	child.setParent(this);
-	child.setOrderOfArrival(cc.s_globalOrderOfArrival++);
-
+	if ( localZOrder === undefined ) localZOrder = 0;
+	if ( tag 		 === undefined ) tag = 0;
+	
+	this.addChild ( child, localZOrder, tag );
+	
 	// Recursive add children with which have physics body.
 	var 	scene = this.getScene ( );
 	if ( scene && scene.getPhysicsWorld ( ) )
 	{
 		child.updatePhysicsBodyTransform ( scene );
 		scene.addChildToPhysicsWorld ( child );
-	}
-
-	if( this._running ){
-		child.onEnter();
-		// prevent onEnterTransitionDidFinish to be called twice when a node is added in onEnter
-		if (this._isTransitionFinished)
-			child.onEnterTransitionDidFinish();
-	}
-	if (this._cascadeColorEnabled)
-		child._renderCmd.setDirtyFlag(cc.Node._dirtyFlags.colorDirty);
-	if (this._cascadeOpacityEnabled)
-		child._renderCmd.setDirtyFlag(cc.Node._dirtyFlags.opacityDirty);
-},	
+	}		
+},
 
 cc.Node.prototype.setPosition = function ( newPosOrxValue, yValue )
 {
