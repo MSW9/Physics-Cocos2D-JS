@@ -1209,30 +1209,37 @@ PhysicsDemoOneWayPlatform = PhysicsBaseLayer.extend
 			onTouchBegan : this.onTouchBegan.bind ( this ),
 			onTouchMoved : this.onTouchMoved.bind ( this ),
 			onTouchEnded : this.onTouchEnded.bind ( this )
-		}, this );
-		this.scheduleUpdate ( );
+		}, this );		
 
-		/*
 		var 	ground = new cc.Node ( );
-		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ) ) );
-		this.addChild ( ground );
+		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
+//		this.addChild ( ground );
+		this.addChildEx ( ground );
 
 		var 	platform = this.makeBox ( VisibleRect.center ( ), cc.size ( 200, 50 ) );
 		platform.getPhysicsBody ( ).setDynamic ( false );
 		platform.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
-		this.addChild ( platform );
+//		this.addChild ( platform );
+		this.addChildEx ( platform );
 
-		var 	ball = this.makeBall ( VisibleRect.center ( ) - cp.v ( 0, 50 ), 20 );
+		var 	ball = this.makeBall ( cp.v.sub ( VisibleRect.center ( ), cp.v ( 0, 50 ) ), 20 );
 		ball.getPhysicsBody ( ).setVelocity ( cp.v ( 0, 150 ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setMass ( 1.0 );
 		ball.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
-		this.addChild ( ball );
+//		this.addChild ( ball );
+		this.addChildEx ( ball );
 
+		/*
 		var 	contactListener = EventListenerPhysicsContactWithBodies::create(platform->getPhysicsBody(), ball->getPhysicsBody() );
 		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsDemoOneWayPlatform::onContactBegin, this);
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 		*/
+	},
+	
+	onContactBegin:function ( contact )
+	{
+		return contact.getContactData ( ).normal.y < 0;
 	}
 });
 
@@ -1251,101 +1258,102 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 	{
 		this._super ( ); 
 		
-		/*
 		this.onToggleDebug ( );
 
-		_sliceTag = 1;
+		this._sliceTag = 1;
 
-		var 	touchListener = EventListenerTouchOneByOne::create();
-		touchListener->onTouchBegan = [](Touch* touch, Event* event)->bool{ return true; };
-		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemoSlice::onTouchEnded, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : function ( touch, event )
+			{
+				return true;
+			},
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );	
 
 		var 	ground = new cc.Node ( );
-		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ) ) );
-		this.addChild ( ground);
+		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
+//		this.addChild ( ground );
+		this.addChildEx ( ground );
 
 		var 	box = new cc.Node ( );
-		cp.v points[4] = {cp.v ( -100, -100 ), cp.v ( -100, 100 ), cp.v ( 100, 100 ), cp.v ( 100, -100)};
-		box.setPhysicsBody ( PhysicsBody::createPolygon(points, 4) );
+		var 	points = [ cp.v ( -100, -100 ), cp.v ( -100, 100 ), cp.v ( 100, 100 ), cp.v ( 100, -100 ) ];
+		box.setPhysicsBody ( cc.PhysicsBody.createPolygon ( points ) );
 		box.setPosition ( VisibleRect.center ( ) );
-		box.getPhysicsBody ( ).setTag(_sliceTag);
-		addChild(box);
-		*/
+		box.getPhysicsBody ( ).setTag ( this._sliceTag );
+//		this.addChild ( box );		
+		this.addChildEx ( box );	
 	},
 	
-	/*
-	bool PhysicsDemoSlice::slice(PhysicsWorld &world, const PhysicsRayCastInfo& info, void *data)
+	slice:function ( world, info, data )
 	{
-		if (info.shape->getBody()->getTag() != _sliceTag)
+		if ( info.shape.getBody ( ).getTag ( ) != this._sliceTag )
 		{
 			return true;
 		}
 
-		if (!info.shape->containsPoint(info.start) && !info.shape->containsPoint(info.end))
-		{
-			cp.v normal = info.end - info.start;
-			normal = normal.getPerp().getNormalized();
-			float dist = info.start.dot(normal);
+		if ( !info.shape.containsPoint ( info.start ) && !info.shape.containsPoint ( info.end ) )
+		{						
+			var 	normal = cp.v.sub ( info.end, info.start );
+			normal = cp.v.normalize ( cp.v.perp ( normal ) ); 
+			var 	dist = cp.v.dot ( info.start, normal );
 
-			clipPoly(dynamic_cast<PhysicsShapePolygon*>(info.shape), normal, dist);
-			clipPoly(dynamic_cast<PhysicsShapePolygon*>(info.shape), -normal, -dist);
+			this.clipPoly ( info.shape, normal, dist );
+			this.clipPoly ( info.shape, cp.v.neg ( normal ), -dist );
 
-			info.shape->getBody()->removeFromWorld();
+			info.shape.getBody ( ).removeFromWorld ( );			
 		}
 
 		return true;
-	}
+	},
 
-	void PhysicsDemoSlice::clipPoly(PhysicsShapePolygon* shape, cp.v normal, float distance)
-	{
-		PhysicsBody* body = shape->getBody();
-		int count = shape->getPointsCount();
-		int pointsCount = 0;
-		cp.v* points = new (std::nothrow) cp.v[count + 1];
+	clipPoly:function ( shape, normal, distance )
+	{	
+		var 	body  = shape.getBody ( );
+		var 	count = shape.getPointsCount ( );
+		var 	pointsCount = 0;
+		var 	points = new Array ( ); 		
+		
+		for ( var i = 0, j = count - 1; i < count; j = i, ++i )
+		{				
+			var 	a = body.local2World ( shape.getPoint ( j ) );
+			var 	aDist = cp.v.dot ( a, normal ) - distance;
 
-		for (int i=0, j=count-1; i<count; j=i, ++i)
-		{
-			cp.v a = body->local2World(shape->getPoint(j) );
-			float aDist = a.dot(normal) - distance;
-
-			if (aDist < 0.0f)
+			if ( aDist < 0.0 )
 			{
-				points[pointsCount] = a;
+				points [ pointsCount ] = a;
 				++pointsCount;
 			}
 
-			cp.v b = body->local2World(shape->getPoint(i) );
-			float bDist = b.dot(normal) - distance;
+			var 	b = body.local2World ( shape.getPoint ( i ) );
+			var 	bDist = cp.v.dot ( b, normal ) - distance;
 
-			if (aDist*bDist < 0.0f)
+			if ( aDist * bDist < 0.0 )
 			{
-				float t = std::fabs(aDist)/(std::fabs(aDist) + std::fabs(bDist) );
-				points[pointsCount] = a.lerp(b, t);
+				var 	t = Math.abs ( aDist ) / ( Math.abs ( aDist ) + Math.abs ( bDist ) );
+				points [ pointsCount ] = cp.v.lerp ( a, b, t );
 				++pointsCount;
 			}
 		}
+		
+		var 	center = cc.PhysicsShape.getPolyonCenter ( points );
+		var 	node   = new cc.Node ( );
+		var 	polyon = cc.PhysicsBody.createPolygon ( points, cc.PHYSICSBODY_MATERIAL_DEFAULT, cp.v.neg ( center ) );		
+		node.setPosition ( center );
+		node.setPhysicsBody ( polyon );
+		polyon.setVelocity ( body.getVelocityAtWorldPoint ( center ) );
+		polyon.setAngularVelocity ( body.getAngularVelocity ( ) );
+		polyon.setTag ( this._sliceTag );
+//		this.addChild ( node );
+		this.addChildEx ( node );
+	},
 
-		cp.v center = PhysicsShape::getPolyonCenter(points, pointsCount);
-		Node* node = new cc.Node ( );
-		PhysicsBody* polyon = PhysicsBody::createPolygon(points, pointsCount, PHYSICSBODY_MATERIAL_DEFAULT, -center);
-		node.setPosition ( center);
-		node.setPhysicsBody ( polyon);
-		polyon->setVelocity ( body->getVelocityAtWorldPoint(center) );
-		polyon->setAngularVelocity ( body->getAngularVelocity ( ) );
-		polyon->setTag(_sliceTag);
-		addChild(node);
-
-		delete[] points;
-	}
-
-	void PhysicsDemoSlice::onTouchEnded(Touch *touch, Event *event)
+	onTouchEnded:function ( touch, event )
 	{
-		var 	func = CC_CALLBACK_3(PhysicsDemoSlice::slice, this);
-		this._scene.getPhysicsWorld ( ).rayCast(func, touch->getStartLocation(), touch->getLocation(), nullptr);
+		this._scene.getPhysicsWorld ( ).rayCast ( this.slice.bind ( this ), touch.getStartLocation ( ), touch.getLocation ( ), null );
 	}
-
-	*/
 });
 
 /////////////////////////////////////////////
@@ -1987,7 +1995,7 @@ var arrayOfPhysicsTest =
  	PhysicsDemoActions,
  	PhysicsDemoPump,
  	PhysicsDemoOneWayPlatform,
-// 	PhysicsDemoSlice,
+ 	PhysicsDemoSlice,
 // 	PhysicsDemoBug3988,
 // 	PhysicsContactTest,
 // 	PhysicsPositionRotationTest,
