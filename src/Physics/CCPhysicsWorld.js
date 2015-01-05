@@ -477,7 +477,7 @@ cc.PhysicsWorld = cc.Class.extend
 				// reset gravity for body
 				if ( !body.isGravityEnabled ( ) )
 				{
-					body.applyForce ( ( this._gravity - gravity ) * body.getMass ( ) );
+					body.applyForce ( cp.v.mult ( ( cp.v.sub ( this._gravity, gravity ) ), body.getMass ( ) ) );
 				}
 			}
 		}
@@ -786,7 +786,7 @@ cc.PhysicsWorld = cc.Class.extend
 			//is gravity enable
 			if ( !body.isGravityEnabled ( ) )
 			{
-				body.applyForce ( -this._gravity * body.getMass ( ) );
+				body.applyForce ( cp.v.mult ( cp.v.neg ( this._gravity ), body.getMass ( ) ) );
 			}
 
 			// add body to space
