@@ -63,6 +63,7 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		
 		this._title 	= "PhysicsTest";
 		this._subtitle 	= "";
+		this._ball		= null;
 	},
 	
 	getTitle:function ( )
@@ -175,7 +176,16 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 	
 	makeBall:function ( point, radius, material )
 	{
-		var 	ball = new cc.Sprite ( this._ball.texture );
+		var 	ball = null;
+		if ( this._ball )
+		{
+			ball = new cc.Sprite ( this._ball.texture );
+		}
+		else
+		{
+			ball = new cc.Sprite ( "res/Images/ball.png" );
+		}
+				
 		var 	body = cc.PhysicsBody.createCircle ( radius, material );		
 
 		ball.setScale ( 0.13 * radius );
@@ -183,6 +193,70 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		ball.setPosition ( point );
 
 		return ball;
+	},
+	
+	makeBox:function ( point, size, color, material )
+	{
+		var 	yellow = false;
+		
+		if ( color == 0 )
+		{
+			yellow = cc.random0To1 ( ) > 0.5;
+		}
+		else
+		{
+			yellow = color == 1;
+		}
+
+		var 	box = yellow ? new cc.Sprite ( "res/Images/YellowSquare.png") : new cc.Sprite ( "res/Images/YellowSquare.png" );
+		box.setScaleX ( size.width  / 100.0 );
+		box.setScaleY ( size.height / 100.0 );
+
+		var 	body = cc.PhysicsBody.createBox ( size, material );
+		box.setPhysicsBody ( body );
+		box.setPosition ( point );
+
+		return box;
+		
+	},
+	
+	makeTriangle:function ( point, size, color, material )
+	{
+		var 	yellow = false;
+
+		if ( color == 0 )
+		{
+			yellow = cc.random0To1 ( ) > 0.5;
+		}
+		else
+		{
+			yellow = color == 1;
+		}
+
+		var 	triangle = yellow ? new cc.Sprite ( "res/Images/YellowTriangle.png") : new cc.Sprite ( "res/Images/CyanTriangle.png" );
+		
+		if ( size.height == 0 )
+		{
+			triangle.setScale ( size.width / 100.0 );
+		}
+		else
+		{
+			triangle.setScaleX ( size.width  / 100.0 );
+			triangle.setScaleY ( size.height / 87.0 );
+		}
+		
+		var 	vers = 
+		[
+		 	              0,  size.height / 2, 
+		 	 size.width / 2, -size.height / 2,
+		 	-size.width / 2, -size.height / 2 
+		];
+
+		var 	body = cc.PhysicsBody.createPolygon ( vers, material );
+		triangle.setPhysicsBody ( body );
+		triangle.setPosition ( point );
+
+		return triangle;		
 	},
 	
 	addGrossiniAtPosition:function ( p, scale )
@@ -409,12 +483,193 @@ PhysicsDemoClickAdd = PhysicsBaseLayer.extend
 	},
 });
 
+/////////////////////////////////////////////
+PhysicsDemoRayCast = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Ray Cast";		
+	},
+	
+	onEnter:function ( ) 
+	{
+		this._super ( );
+		
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+		
+		this._mode  = 0;
+		this._angle = 0;
+		this._node  = new cc.DrawNode ( );
+		this.addChild ( this._node, 1 );
+		
+		var 	node = new cc.DrawNode ( );
+		var		line = { s : cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), e : cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) };
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( line.s, line.e ) );			
+		//node->drawSegment(VisibleRect::leftBottom() + Vec2(0, 50), VisibleRect::rightBottom() + Vec2(0, 50), 1, STATIC_COLOR);
+		node.drawSegment ( line.s, line.e, 1, STATIC_COLOR );
+//		this.addChild ( node );
+		this.addChildEx ( node );
+		
+		cc.MenuItemFont.setFontSize ( 18 );
+		var 	item = new cc.MenuItemFont ( "Change Mode(any)", this.changeModeCallback, this );		
+		var 	menu = new cc.Menu ( item );
+		menu.setPosition ( VisibleRect.left ( ).x + 100, VisibleRect.top ( ).y - 50 );
+		this.addChild ( menu );
+		
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ALL_AT_ONCE,
+			onTouchesEnded : this.onTouchesEnded.bind ( this )
+		}, this );		    
+		
+		this.scheduleUpdate ( );
+	},
+
+	getTitle:function ( )
+	{
+		return "Ray Cast";
+	},		
+
+	changeModeCallback:function ( sender )
+	{
+		this._mode = ( this._mode + 1 ) % 3;
+
+		switch ( this._mode )
+		{
+			case 0 :	sender.setString ( "Change Mode(any)" );		break;
+			case 1 :	sender.setString ( "Change Mode(nearest)" );	break;
+			case 2 :	sender.setString ( "Change Mode(multiple)" );	break;
+		}
+	},
+	
+	onTouchesEnded:function ( touches, event )
+	{
+		// Add a new body/atlas sprite at the touched location
+		for ( var idx in touches )
+		{
+			var		touch = touches [ idx ];
+			var 	location = touch.getLocation ( );
+
+			var 	r = cc.random0To1 ( );
+			var		obj = null; 
+			
+			if ( r < 1.0 / 3.0 )
+			{
+				obj = this.makeBall ( location, 5 + cc.random0To1 ( ) * 10 );
+			}
+			else if ( r < 2.0 / 3.0 )
+			{
+				obj = this.makeBox ( location, cc.size ( 10 + cc.random0To1 ( ) * 15, 10 + cc.random0To1 ( ) * 15 ) );
+			}
+			else
+			{
+				obj = this.makeTriangle ( location, cc.size ( 10 + cc.random0To1 ( ) * 20, 10 + cc.random0To1 ( ) * 20 ) );
+			}		
+			
+//			this.addChild ( obj );
+			this.addChildEx ( obj );
+		}
+	},
+	
+	anyRay:function ( world, info, data )
+	{
+		data.x = info.contact.x;	
+		data.y = info.contact.y;	
+		return false;
+	},
+
+	update:function ( delta )
+	{
+		this._super ( delta );
+
+		var 	L = 150.0;
+		var 	point1 = VisibleRect.center ( );
+		var 	d = cp.v ( L * Math.cos ( this._angle ), L * Math.sin ( this._angle ) );
+		var 	point2 = cp.v.add ( point1, d );
+
+		this._node.clear ( );
+		
+		switch ( this._mode )
+		{
+			case 0 :
+				
+				var 	point3 = cp.v ( point2.x, point2.y );	
+				this._scene.getPhysicsWorld ( ).rayCast ( this.anyRay, point1, point2, point3 );
+				this._node.drawSegment ( point1, point3, 1, STATIC_COLOR );
+	
+				if ( !cp.v.eql ( point2, point3 ) )
+				{
+					this._node.drawDot ( point3, 2, cc.color ( 255, 255, 255, 255 ) );
+				}				
+				
+				break;
+		
+			case 1 :
+	
+				var 	point3 = cp.v ( point2.x, point2.y );	
+				var 	friction = 1.0;
+				
+				var		func = function ( world, info, data )
+				{
+					if ( friction > info.fraction )
+					{
+						point3 = info.contact;						
+						friction = info.fraction;
+					}
+					
+					return true;
+				};
+	
+				this._scene.getPhysicsWorld ( ).rayCast ( func, point1, point2, null );
+				this._node.drawSegment ( point1, point3, 1, STATIC_COLOR );
+	
+				if ( !cp.v.eql ( point2, point3 ) )
+				{
+					this._node.drawDot ( point3, 2, cc.color ( 255, 255, 255, 255 ) );
+				}	
+				
+				break;
+		
+			case 2 :
+
+				var 	MAX_MULTI_RAYCAST_NUM = 5
+				var 	points = new Array ( MAX_MULTI_RAYCAST_NUM );
+				var 	num = 0;
+	
+				var		func = function ( world, info, data )
+				{
+					if ( num < MAX_MULTI_RAYCAST_NUM )
+					{
+						points [ num++ ] = info.contact;						
+					}
+					
+					return true;
+				};
+				
+				this._scene.getPhysicsWorld ( ).rayCast ( func, point1, point2, null );
+				this._node.drawSegment ( point1, point2, 1, STATIC_COLOR );
+	
+				for ( var i = 0; i < num; ++i )
+				{
+					this._node.drawDot ( points [ i ], 2, cc.color ( 255, 255, 255, 255 ) );
+				}
+	
+				break;		
+		}
+
+		this._angle += 0.25 * Math.PI / 180.0;
+	}
+});
+
 // Physics Demos
 var arrayOfPhysicsTest = 
 [
  	PhysicsDemoLogoSmash,
  	PhysicsDemoPyramidStack,	
  	PhysicsDemoClickAdd,
+ 	PhysicsDemoRayCast,
 ];
 
 var nextPhysicsTest = function ( )

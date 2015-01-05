@@ -36,5 +36,9 @@ RESOURCES =
  	"res/Images/f1.png",
  	"res/Images/f2.png",	 
  	"res/Images/ball.png",
- 	"res/Images/grossini_dance_atlas.png"
+ 	"res/Images/grossini_dance_atlas.png",
+ 	"res/Images/CyanSquare.png",
+ 	"res/Images/CyanTriangle.png",
+ 	"res/Images/YellowSquare.png",
+ 	"res/Images/YellowTriangle.png",
 ];
