@@ -64,6 +64,7 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		this._title 	= "PhysicsTest";
 		this._subtitle 	= "";
 		this._ball		= null;
+		this._mouses	= new Array ( );
 	},
 	
 	getTitle:function ( )
@@ -132,8 +133,69 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		item.setFontSize ( 24 );
 		var 	menu = new cc.Menu ( item );
 		menu.setPosition ( VisibleRect.right ( ).x - 100, VisibleRect.top ( ).y - 80 );
-		this.addChild ( menu );				
+		this.addChild ( menu, 102 );				
 	},
+	
+	onTouchBegan:function ( touch, event )
+	{
+		var 	location = touch.getLocation ( );
+		var 	arr = this._scene.getPhysicsWorld ( ).getShapes ( location );
+
+		var 	body = null;
+		for ( var idx in arr )
+		{
+			var		obj = arr [ idx ];
+			if ( ( obj.getBody ( ).getTag ( ) & DRAG_BODYS_TAG ) != 0 )
+			{
+				body = obj.getBody ( );
+				break;
+			}
+		}
+
+		if ( body != null )
+		{
+			var 	mouse = new cc.Node ( );
+			mouse.setPhysicsBody ( cc.PhysicsBody.create ( cc.PHYSICS_INFINITY, cc.PHYSICS_INFINITY ) );
+			mouse.getPhysicsBody ( ).setDynamic ( false );
+			mouse.setPosition ( location );
+			this.addChild ( mouse );
+//			this.addChildEx ( mouse );
+						
+			var 	joint = cc.PhysicsJointPin.create ( mouse.getPhysicsBody ( ), body, location );
+			joint.setMaxForce ( 5000.0 * body.getMass ( ) );
+			this._scene.getPhysicsWorld ( ).addJoint ( joint );
+			this._mouses.push ( { first : touch.getID ( ), second : mouse } );
+
+			return true;
+		}
+		
+		return false;
+	},
+	
+	onTouchMoved:function ( touch, event )
+	{
+		for ( var i = 0; i < this._mouses.length; i++ )
+		{
+			if ( this._mouses [ i ].first == touch.getID ( ) )
+			{
+				this._mouses [ i ].second.setPosition ( touch.getLocation ( ) );
+			}
+		}
+	},
+	
+	onTouchEnded:function ( touch, event )
+	{
+		for ( var i = 0; i < this._mouses.length; i++ )
+		{
+			if ( this._mouses [ i ].first == touch.getID ( ) )
+			{
+//				this.removeChild ( this._mouses [ i ].second );
+				this.removeChildEx ( this._mouses [ i ].second );
+				this._mouses.splice ( i, 1 );
+				i--;
+			}
+		}
+	},	
 	
 	onCleanup:function ( ) 
 	{
@@ -660,6 +722,234 @@ PhysicsDemoRayCast = PhysicsBaseLayer.extend
 		}
 
 		this._angle += 0.25 * Math.PI / 180.0;
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsDemoJoints = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Joints";		
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( );
+
+		this.onToggleDebug ( );
+		
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );	
+
+		var 	width  = ( VisibleRect.getVisibleRect ( ).width  - 10 ) / 4;
+		var 	height = ( VisibleRect.getVisibleRect ( ).height - 50 ) / 4;
+
+		var 	node = new cc.Node ( );
+		var 	box  = cc.PhysicsBody.create ( );
+		node.setPhysicsBody ( box );
+		box.setDynamic ( false );
+		node.setPosition ( cp.vzero );
+//		this.addChild ( node );
+		this.addChildEx ( node );
+
+		for ( var i = 0; i < 4; ++i )
+		{
+			for ( var j = 0; j < 4; ++j )
+			{				
+				var 	offset = cc.p ( VisibleRect.leftBottom ( ).x + 5 + j * width + width / 2, VisibleRect.leftBottom ( ).y + 50 + i * height + height / 2 );
+				box.addShape ( cc.PhysicsShapeEdgeBox.create ( cc.size ( width, height ), cc.PHYSICSSHAPE_MATERIAL_DEFAULT, 1, offset ) );
+
+				switch ( i * 4 + j )
+				{
+					case 0 :
+					{
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBall ( cp.v.add ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var		joint = cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), offset );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+					
+					case 1 :
+					{
+	
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var 	joint = cc.PhysicsJointFixed.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), offset );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+		
+					case 2 :
+					{
+	
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var 	joint = cc.PhysicsJointDistance.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), cp.vzero, cp.vzero );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 3 :
+					{
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var 	joint = cc.PhysicsJointLimit.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), cp.vzero, cp.vzero, 30.0, 60.0 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+					
+					case 4 :
+					{
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var 	joint = cc.PhysicsJointSpring.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), cp.vzero, cp.vzero, 500.0, 0.3 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 5 :
+					{
+						var 	sp1 = this.makeBall ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), 10 );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						var 	joint = cc.PhysicsJointGroove.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), cp.v ( 30, 15 ), cp.v ( 30, -15 ), cp.v ( -30, 0 ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 6 :
+					{
+						var 	sp1 = this.makeBox ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), box, sp1.getPosition ( ) ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp2.getPhysicsBody ( ), box, sp2.getPosition ( ) ) );
+						var 	joint = cc.PhysicsJointRotarySpring.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), 3000.0, 60.0 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+					
+					case 7 :
+					{
+						var 	sp1 = this.makeBox ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), box, sp1.getPosition ( ) ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp2.getPhysicsBody ( ), box, sp2.getPosition ( ) ) );
+						var 	joint = cc.PhysicsJointRotaryLimit.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), 0.0, Math.PI * 2 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 8 :
+					{
+						var 	sp1 = this.makeBox ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), box, sp1.getPosition ( ) ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp2.getPhysicsBody ( ), box, sp2.getPosition ( ) ) );
+						var 	joint = cc.PhysicsJointRatchet.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), 0.0, Math.PI * 2 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 9 :
+					{
+						var 	sp1 = this.makeBox ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), box, sp1.getPosition ( ) ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp2.getPhysicsBody ( ), box, sp2.getPosition ( ) ) );
+						var	 	joint = cc.PhysicsJointGear.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), 0.0, 2.0 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+				
+					case 10 :
+					{
+						var 	sp1 = this.makeBox ( cp.v.sub ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+						var 	sp2 = this.makeBox ( cp.v.add ( offset, cp.v ( 30, 0 ) ), cc.size ( 30, 10 ) );
+						sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp1.getPhysicsBody ( ), box, sp1.getPosition ( ) ) );
+						this._scene.getPhysicsWorld ( ).addJoint ( cc.PhysicsJointPin.create ( sp2.getPhysicsBody ( ), box, sp2.getPosition ( ) ) );
+						var 	joint = cc.PhysicsJointMotor.create ( sp1.getPhysicsBody ( ), sp2.getPhysicsBody ( ), Math.PI * 2 );
+						this._scene.getPhysicsWorld ( ).addJoint ( joint );
+	
+						this.addChildEx ( sp1 );
+						this.addChildEx ( sp2 );
+						break;
+					}
+					
+				}				 
+			}
+		}
 	}
 });
 

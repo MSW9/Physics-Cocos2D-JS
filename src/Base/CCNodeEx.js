@@ -103,14 +103,14 @@ cc.Node.prototype.setPhysicsBody = function ( body )
 cc.Node.prototype.getPhysicsBody = function ( )
 {
 	return this._physicsBody;
-},
+};
 
 cc.Node.prototype.updatePhysicsBodyTransform = function ( scene )
 {
 	this.updatePhysicsBodyScale    ( scene );
 	this.updatePhysicsBodyPosition ( scene );
 	this.updatePhysicsBodyRotation ( scene );		
-},
+};
 
 cc.Node.prototype.updatePhysicsBodyPosition = function ( scene )
 {		
@@ -133,7 +133,7 @@ cc.Node.prototype.updatePhysicsBodyPosition = function ( scene )
 		var		child = this._children [ idx ];
 		child.updatePhysicsBodyPosition ( scene );		
 	}		
-},
+};
 
 cc.Node.prototype.updatePhysicsBodyRotation = function ( scene )
 {		
@@ -159,7 +159,7 @@ cc.Node.prototype.updatePhysicsBodyRotation = function ( scene )
 		var		child = this._children [ idx ];
 		child.updatePhysicsBodyRotation ( scene );		
 	}
-},
+};
 
 cc.Node.prototype.updatePhysicsBodyScale = function ( scene )
 {		
@@ -187,7 +187,7 @@ cc.Node.prototype.updatePhysicsBodyScale = function ( scene )
 		var		child = this._children [ idx ];
 		child.updatePhysicsBodyScale ( scene );		
 	}		
-},
+};
 
 cc.Node.prototype.getScene = function ( ) 
 {		
@@ -210,7 +210,7 @@ cc.Node.prototype.getScene = function ( )
 	{
 		return null;
 	}		
-},
+};
 
 cc.Node.prototype.addChildEx = function ( child, localZOrder, tag )
 {
@@ -226,7 +226,19 @@ cc.Node.prototype.addChildEx = function ( child, localZOrder, tag )
 		child.updatePhysicsBodyTransform ( scene );
 		scene.addChildToPhysicsWorld ( child );
 	}		
-},
+};
+
+cc.Node.prototype.removeChildEx = function ( child, cleanup )
+{
+	if ( cleanup === undefined ) cleanup = true;
+
+	if ( this._physicsBody != null )
+	{
+		this._physicsBody.removeFromWorld ( );
+	}
+	
+	this.removeChild ( child, cleanup );
+};
 
 cc.Node.prototype.setPosition = function ( newPosOrxValue, yValue )
 {
