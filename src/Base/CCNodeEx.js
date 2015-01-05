@@ -215,7 +215,7 @@ cc.Node.prototype.getScene = function ( )
 cc.Node.prototype.addChildEx = function ( child, localZOrder, tag )
 {
 	if ( localZOrder === undefined ) localZOrder = 0;
-	if ( tag 		 === undefined ) tag = 0;
+	if ( tag 		 === undefined ) tag = child.tag;
 	
 	this.addChild ( child, localZOrder, tag );
 	
