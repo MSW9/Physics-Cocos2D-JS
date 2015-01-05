@@ -261,7 +261,7 @@ cc.PhysicsBody = cc.Class.extend
 		// if _gravityEnabled is false, add a reverse of gravity force to body
 		if ( this._world != null && this._dynamic && !this._gravityEnabled && this._mass != cc.PHYSICS_INFINITY )
 		{
-			this.applyForce ( -this._world.getGravity ( ) * this._mass );
+			this.applyForce ( cp.v.mult ( cp.v.neg ( this._world.getGravity ( ) ), this._mass ) );
 		}		
 	},
 	
@@ -876,11 +876,11 @@ cc.PhysicsBody = cc.Class.extend
 			{
 				if ( enable )
 				{
-					this.applyForce ( this._world.getGravity ( ) * this._mass );
+					this.applyForce ( cp.v.mult ( this._world.getGravity ( ), this._mass ) );
 				}
 				else
 				{
-					this.applyForce ( -this._world.getGravity ( ) * this._mass );
+					this.applyForce ( cp.v.mult ( cp.v.neg ( this._world.getGravity ( ) ), this._mass ) );
 				}
 			}
 		}		

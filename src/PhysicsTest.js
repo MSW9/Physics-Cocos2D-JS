@@ -270,7 +270,7 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 			yellow = color == 1;
 		}
 
-		var 	box = yellow ? new cc.Sprite ( "res/Images/YellowSquare.png") : new cc.Sprite ( "res/Images/YellowSquare.png" );
+		var 	box = yellow ? new cc.Sprite ( "res/Images/YellowSquare.png" ) : new cc.Sprite ( "res/Images/YellowSquare.png" );
 		box.setScaleX ( size.width  / 100.0 );
 		box.setScaleY ( size.height / 100.0 );
 
@@ -295,7 +295,7 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 			yellow = color == 1;
 		}
 
-		var 	triangle = yellow ? new cc.Sprite ( "res/Images/YellowTriangle.png") : new cc.Sprite ( "res/Images/CyanTriangle.png" );
+		var 	triangle = yellow ? new cc.Sprite ( "res/Images/YellowTriangle.png" ) : new cc.Sprite ( "res/Images/CyanTriangle.png" );
 		
 		if ( size.height == 0 )
 		{
@@ -569,7 +569,7 @@ PhysicsDemoRayCast = PhysicsBaseLayer.extend
 		var 	node = new cc.DrawNode ( );
 		var		line = { s : cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), e : cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) };
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( line.s, line.e ) );			
-		//node->drawSegment(VisibleRect::leftBottom() + Vec2(0, 50), VisibleRect::rightBottom() + Vec2(0, 50), 1, STATIC_COLOR);
+		//node->drawSegment(VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ), 1, STATIC_COLOR);
 		node.drawSegment ( line.s, line.e, 1, STATIC_COLOR );
 //		this.addChild ( node );
 		this.addChildEx ( node );
@@ -953,6 +953,1029 @@ PhysicsDemoJoints = PhysicsBaseLayer.extend
 	}
 });
 
+/////////////////////////////////////////////
+PhysicsDemoActions = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Actions";		
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );	
+
+		var 	node = new cc.Node ( );
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( cc.size ( VisibleRect.getVisibleRect ( ).width, VisibleRect.getVisibleRect ( ).height ) ) );
+		node.setPosition ( VisibleRect.center ( ) );
+//		this.addChildEx ( node );
+		this.addChild ( node );
+
+		var 	sp1 = this.addGrossiniAtPosition ( VisibleRect.center ( ) );
+		var	 	sp2 = this.addGrossiniAtPosition ( cp.v.add ( VisibleRect.left    ( ), cp.v ( 50,   0 ) ) );
+		var 	sp3 = this.addGrossiniAtPosition ( cp.v.sub ( VisibleRect.right   ( ), cp.v ( 20,   0 ) ) );
+		var	 	sp4 = this.addGrossiniAtPosition ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 50, -50 ) ) );
+		sp4.getPhysicsBody ( ).setGravityEnable ( false );
+
+		sp1.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		sp2.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		sp3.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		sp4.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+
+		var 	actionTo 	 = cc.JumpTo ( 2, cc.p ( 100, 100 ), 50, 4);
+		var 	actionBy 	 = cc.JumpBy ( 2, cc.p ( 300,   0 ), 50, 4);
+		var 	actionUp 	 = cc.JumpBy ( 2, cc.p (   0,  50 ), 80, 4);
+		var 	actionByBack = actionBy.reverse ( );
+		var 	rotateBy 	 = cc.RotateBy ( 2,  180 );
+		var 	rotateByBack = cc.RotateBy ( 2, -180 );
+
+		sp1.runAction ( cc.RepeatForever ( actionUp ) );
+		sp2.runAction ( cc.RepeatForever ( cc.Sequence ( actionBy, actionByBack ) ) );
+		sp3.runAction ( actionTo );
+		sp4.runAction ( cc.RepeatForever ( cc.Sequence ( rotateBy, rotateByBack ) ) );				
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsDemoPump = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Pump";	
+		this._subtitle = "touch screen on left or right";	
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+	
+		this.onToggleDebug ( );
+
+		this._distance  = 0.0;
+		this._rotationV = 0.0;
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );
+		this.scheduleUpdate ( );
+
+		
+		var 	node = new cc.Node ( );
+		var 	body = cc.PhysicsBody.create ( );
+		body.setDynamic ( false );
+
+		var 	staticMaterial = cc.PhysicsMaterial ( cc.PHYSICS_INFINITY, 0, 0.5 );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v (  50,    0 ) ), cp.v.add ( VisibleRect.leftTop	( ), cp.v (   50, -130 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 190,    0 ) ), cp.v.add ( VisibleRect.leftTop	( ), cp.v (  100, - 50 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 100, - 50 ) ), cp.v.add ( VisibleRect.leftTop	( ), cp.v (  100, - 90 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v (  50, -130 ) ), cp.v.add ( VisibleRect.leftTop    ( ), cp.v (  100, -145 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 100, -145 ) ), cp.v.add ( VisibleRect.leftBottom ( ), cp.v (  100,   80 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 150, - 80 ) ), cp.v.add ( VisibleRect.leftBottom ( ), cp.v (  150,   80 ) ), staticMaterial, 2.0 ) );
+		body.addShape ( cc.PhysicsShapeEdgeSegment.create ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 150, - 80 ) ), cp.v.add ( VisibleRect.rightTop   ( ), cp.v ( -100, -150 ) ), staticMaterial, 2.0 ) );
+
+		body.setCategoryBitmask ( 0x01 );
+
+		// balls
+		for ( var i = 0; i < 6; ++i )
+		{
+			var 	ball = this.makeBall ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 75 + cc.random0To1 ( ) * 90, 0 ) ), 22, cc.PhysicsMaterial ( 0.05, 0.0, 0.1 ) );
+			ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+//			this.addChild ( ball );
+			this.addChildEx ( ball );
+		}
+
+		node.setPhysicsBody ( body );
+//		this.addChild ( node );
+		this.addChildEx ( node );
+		
+		var 	vec =
+		[
+			cp.v.add ( VisibleRect.leftTop	  ( ), cp.v ( 102, -148 ) ),
+			cp.v.add ( VisibleRect.leftTop	  ( ), cp.v ( 148, -161 ) ),
+			cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 148,   20 ) ),
+			cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 102,   20 ) )
+		];
+
+		var 	_world = this._scene.getPhysicsWorld ( );
+
+		// small gear
+		var 	sgear = new cc.Node ( );
+		var 	sgearB = cc.PhysicsBody.createCircle ( 44 );
+		sgear.setPhysicsBody ( sgearB );
+		sgear.setPosition ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 125, 0 ) ) );
+//		this.addChild ( sgear );
+		this.addChildEx ( sgear );
+		sgearB.setCategoryBitmask  ( 0x04 );
+		sgearB.setCollisionBitmask ( 0x04 );
+		sgearB.setTag ( 1 );
+		_world.addJoint ( cc.PhysicsJointPin.create ( body, sgearB, sgearB.getPosition ( ) ) );
+
+		// big gear
+		var 	bgear = new cc.Node ( );
+		var 	bgearB = cc.PhysicsBody.createCircle ( 100 );
+		bgear.setPhysicsBody ( bgearB );
+		bgear.setPosition ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 275, 0 ) ) );
+//		this.addChild ( bgear );
+		this.addChildEx ( bgear );
+		bgearB.setCategoryBitmask ( 0x04 );
+		_world.addJoint ( cc.PhysicsJointPin.create ( body, bgearB, bgearB.getPosition ( ) ) );
+		
+		// pump
+		var 	pump = new cc.Node ( );
+		var 	center = cc.PhysicsShape.getPolyonCenter ( vec, 4 );		
+		pump.setPosition ( center );
+		var 	pumpB = cc.PhysicsBody.createPolygon ( vec, cc.PHYSICSBODY_MATERIAL_DEFAULT, cp.v.neg ( center ) );
+		pump.setPhysicsBody ( pumpB );
+//		this.addChild ( pump );
+		this.addChildEx ( pump );
+		
+		pumpB.setCategoryBitmask ( 0x02 );
+		pumpB.setGravityEnable ( false );
+		_world.addJoint ( cc.PhysicsJointDistance.create ( pumpB, sgearB, cp.v ( 0, 0 ), cp.v ( 0, -44 ) ) );
+		
+		// plugger
+		var 	seg = [ cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 75, -120 ) ), cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 75, -100 ) ) ];
+		var 	segCenter = cp.v.mult ( cp.v.add ( seg [ 1 ], seg [ 0 ] ), 0.5 );
+		seg [ 1 ] = cp.v.sub ( seg [ 1 ], segCenter );
+		seg [ 0 ] = cp.v.sub ( seg [ 0 ], segCenter );
+				
+		var 	plugger = new cc.Node ( );
+		var 	pluggerB = cc.PhysicsBody.createEdgeSegment ( seg [ 0 ], seg [ 1 ], cc.PhysicsMaterial ( 0.01, 0.0, 0.5 ), 20 );
+
+		pluggerB.setDynamic ( true );
+		pluggerB.setMass ( 30 );
+		pluggerB.setMoment ( 100000 );
+		plugger.setPhysicsBody ( pluggerB );
+		plugger.setPosition ( segCenter );
+//		this.addChild ( plugger );
+		this.addChildEx ( plugger );
+		
+		pluggerB.setCategoryBitmask ( 0x02 );
+		sgearB.setCollisionBitmask ( 0x04 | 0x01 );
+		_world.addJoint ( cc.PhysicsJointPin.create ( body, pluggerB, cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 75, -90 ) ) ) );
+		_world.addJoint ( cc.PhysicsJointDistance.create ( pluggerB, sgearB, pluggerB.world2Local ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 75, 0 ) ) ), cp.v ( 44, 0 ) ) );		
+	},
+	
+	update:function ( delta )
+	{
+		var		bodies = this._scene.getPhysicsWorld ( ).getAllBodies ( );
+		for ( var i in bodies )
+		{
+			var		body = bodies [ i ];
+			if ( body.getTag ( ) == DRAG_BODYS_TAG && body.getPosition ( ).y < 0.0 )
+			{
+				body.getNode ( ).setPosition ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 75 + cc.random0To1 ( ) * 90, 0 ) ) );
+				body.setVelocity ( cp.v ( 0, 0 ) );
+			}
+		}
+		
+		var 	gear = this._scene.getPhysicsWorld ( ).getBody ( 1 );
+		if ( gear != null )
+		{
+			if ( this._distance != 0.0 )
+			{
+				this._rotationV += this._distance / 2500.0;
+
+				if ( this._rotationV >  30 ) this._rotationV =  30.0;
+				if ( this._rotationV < -30 ) this._rotationV = -30.0;
+			}
+
+			gear.setAngularVelocity ( this._rotationV );
+			this._rotationV *= 0.995;
+		}
+	},
+	
+	onTouchBegan:function ( touch, event )
+	{
+		this._super ( touch, event );
+		
+		this._distance = touch.getLocation ( ).x - VisibleRect.center ( ).x;
+		
+		return true;
+	},
+	
+	onTouchMoved:function ( touch, event )
+	{
+		this._super ( touch, event );
+		
+		this._distance = touch.getLocation ( ).x - VisibleRect.center ( ).x;
+	},
+	
+	onTouchEnded:function ( touch, event )
+	{
+		this._super ( touch, event );
+		
+		this._distance = 0;
+	},
+});
+
+/////////////////////////////////////////////
+PhysicsDemoOneWayPlatform = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "One Way Platform";			
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );
+		this.scheduleUpdate ( );
+
+		/*
+		var 	ground = new cc.Node ( );
+		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ) ) );
+		this.addChild ( ground );
+
+		var 	platform = this.makeBox ( VisibleRect.center ( ), cc.size ( 200, 50 ) );
+		platform.getPhysicsBody ( ).setDynamic ( false );
+		platform.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
+		this.addChild ( platform );
+
+		var 	ball = this.makeBall ( VisibleRect.center ( ) - cp.v ( 0, 50 ), 20 );
+		ball.getPhysicsBody ( ).setVelocity ( cp.v ( 0, 150 ) );
+		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		ball.getPhysicsBody ( ).setMass ( 1.0 );
+		ball.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
+		this.addChild ( ball );
+
+		var 	contactListener = EventListenerPhysicsContactWithBodies::create(platform->getPhysicsBody(), ball->getPhysicsBody() );
+		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsDemoOneWayPlatform::onContactBegin, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+		*/
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsDemoSlice = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Slice";
+		this._subtitle = "click and drag to slice up the block";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this.onToggleDebug ( );
+
+		_sliceTag = 1;
+
+		var 	touchListener = EventListenerTouchOneByOne::create();
+		touchListener->onTouchBegan = [](Touch* touch, Event* event)->bool{ return true; };
+		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemoSlice::onTouchEnded, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+		var 	ground = new cc.Node ( );
+		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ) ) );
+		this.addChild ( ground);
+
+		var 	box = new cc.Node ( );
+		cp.v points[4] = {cp.v ( -100, -100 ), cp.v ( -100, 100 ), cp.v ( 100, 100 ), cp.v ( 100, -100)};
+		box.setPhysicsBody ( PhysicsBody::createPolygon(points, 4) );
+		box.setPosition ( VisibleRect.center ( ) );
+		box.getPhysicsBody ( ).setTag(_sliceTag);
+		addChild(box);
+		*/
+	},
+	
+	/*
+	bool PhysicsDemoSlice::slice(PhysicsWorld &world, const PhysicsRayCastInfo& info, void *data)
+	{
+		if (info.shape->getBody()->getTag() != _sliceTag)
+		{
+			return true;
+		}
+
+		if (!info.shape->containsPoint(info.start) && !info.shape->containsPoint(info.end))
+		{
+			cp.v normal = info.end - info.start;
+			normal = normal.getPerp().getNormalized();
+			float dist = info.start.dot(normal);
+
+			clipPoly(dynamic_cast<PhysicsShapePolygon*>(info.shape), normal, dist);
+			clipPoly(dynamic_cast<PhysicsShapePolygon*>(info.shape), -normal, -dist);
+
+			info.shape->getBody()->removeFromWorld();
+		}
+
+		return true;
+	}
+
+	void PhysicsDemoSlice::clipPoly(PhysicsShapePolygon* shape, cp.v normal, float distance)
+	{
+		PhysicsBody* body = shape->getBody();
+		int count = shape->getPointsCount();
+		int pointsCount = 0;
+		cp.v* points = new (std::nothrow) cp.v[count + 1];
+
+		for (int i=0, j=count-1; i<count; j=i, ++i)
+		{
+			cp.v a = body->local2World(shape->getPoint(j) );
+			float aDist = a.dot(normal) - distance;
+
+			if (aDist < 0.0f)
+			{
+				points[pointsCount] = a;
+				++pointsCount;
+			}
+
+			cp.v b = body->local2World(shape->getPoint(i) );
+			float bDist = b.dot(normal) - distance;
+
+			if (aDist*bDist < 0.0f)
+			{
+				float t = std::fabs(aDist)/(std::fabs(aDist) + std::fabs(bDist) );
+				points[pointsCount] = a.lerp(b, t);
+				++pointsCount;
+			}
+		}
+
+		cp.v center = PhysicsShape::getPolyonCenter(points, pointsCount);
+		Node* node = new cc.Node ( );
+		PhysicsBody* polyon = PhysicsBody::createPolygon(points, pointsCount, PHYSICSBODY_MATERIAL_DEFAULT, -center);
+		node.setPosition ( center);
+		node.setPhysicsBody ( polyon);
+		polyon->setVelocity ( body->getVelocityAtWorldPoint(center) );
+		polyon->setAngularVelocity ( body->getAngularVelocity ( ) );
+		polyon->setTag(_sliceTag);
+		addChild(node);
+
+		delete[] points;
+	}
+
+	void PhysicsDemoSlice::onTouchEnded(Touch *touch, Event *event)
+	{
+		var 	func = CC_CALLBACK_3(PhysicsDemoSlice::slice, this);
+		this._scene.getPhysicsWorld ( ).rayCast(func, touch->getStartLocation(), touch->getLocation(), nullptr);
+	}
+
+	*/
+});
+
+/////////////////////////////////////////////
+PhysicsDemoBug3988 = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Bug3988";
+		this._subtitle = "All the Rectangles should have same rotation angle";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this.onToggleDebug ( );
+		this._scene.getPhysicsWorld ( ).setGravity(Vect::ZERO);
+
+		var 	ball  = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		ball.setPosition ( VisibleRect.center ( ) - cp.v ( 100, 0 ) );
+		ball->setRotation(30.0 );
+		this.addChild ( ball );
+
+		var 	physicsBall = this.makeBox ( VisibleRect.center ( ) + cp.v ( 100, 0 ), cc.size ( 100, 100 ) );
+		physicsBall->setRotation(30.0 );
+		this.addChild ( physicsBall);
+		*/
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsContactTest = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Contact Test";
+		this._subtitle = "should not crash";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this._scene.getPhysicsWorld ( ).setGravity(Vect::ZERO);
+		var 	s = VisibleRect::getVisibleRect().size;
+
+		_yellowBoxNum = 50;
+		_blueBoxNum = 50;
+		_yellowTriangleNum = 50;
+		_blueTriangleNum = 50;
+
+
+		MenuItemFont::setFontcc.size ( 65);
+		var 	decrease1 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
+		decrease1->setColor(Color3B(0,200,20 ) );
+		var 	increase1 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
+		increase1->setColor(Color3B(0,200,20 ) );
+		decrease1->setTag(1);
+		increase1->setTag(1);
+
+		var 	menu1 = Menu::create(decrease1, increase1, nullptr);
+		menu1->alignItemsHorizontally();
+		menu1.setPosition ( cp.v ( s.width/2, s.height-50 ) );
+		addChild(menu1, 1);
+
+		var 	label = Label::createWithTTF("yellow box", "fonts/arial.ttf", 32);
+		addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2 - 150, s.height-50 ) );
+
+		var 	decrease2 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
+		decrease2->setColor(Color3B(0,200,20 ) );
+		var 	increase2 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
+		increase2->setColor(Color3B(0,200,20 ) );
+		decrease2->setTag(2);
+		increase2->setTag(2);
+
+		var 	menu2 = Menu::create(decrease2, increase2, nullptr);
+		menu2->alignItemsHorizontally();
+		menu2.setPosition ( cp.v ( s.width/2, s.height-90 ) );
+		addChild(menu2, 1);
+
+		label = Label::createWithTTF("blue box", "fonts/arial.ttf", 32);
+		addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2 - 150, s.height-90 ) );
+
+		var 	decrease3 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
+		decrease3->setColor(Color3B(0,200,20 ) );
+		var 	increase3 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
+		increase3->setColor(Color3B(0,200,20 ) );
+		decrease3->setTag(3);
+		increase3->setTag(3);
+
+		var 	menu3 = Menu::create(decrease3, increase3, nullptr);
+		menu3->alignItemsHorizontally();
+		menu3.setPosition ( cp.v ( s.width/2, s.height-130 ) );
+		addChild(menu3, 1);
+
+		label = Label::createWithTTF("yellow triangle", "fonts/arial.ttf", 32);
+		addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2 - 150, s.height-130 ) );
+
+		var 	decrease4 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
+		decrease4->setColor(Color3B(0,200,20 ) );
+		var 	increase4 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
+		increase4->setColor(Color3B(0,200,20 ) );
+		decrease4->setTag(4);
+		increase4->setTag(4);
+
+		var 	menu4 = Menu::create(decrease4, increase4, nullptr);
+		menu4->alignItemsHorizontally();
+		menu4.setPosition ( cp.v ( s.width/2, s.height-170 ) );
+		addChild(menu4, 1);
+
+		label = Label::createWithTTF("blue triangle", "fonts/arial.ttf", 32);
+		addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2 - 150, s.height-170 ) );
+
+		resetTest();
+
+		*/
+	}
+	/*
+	void PhysicsContactTest::onDecrease(Ref* sender)
+	{
+		switch (dynamic_cast<Node*>(sender)->getTag())
+		{
+		case 1:
+			if(_yellowBoxNum > 0) _yellowBoxNum -= 50;
+			break;
+		case 2:
+			if(_blueBoxNum > 0) _blueBoxNum -= 50;
+			break;
+		case 3:
+			if(_yellowTriangleNum > 0) _yellowTriangleNum -= 50;
+			break;
+		case 4:
+			if(_blueTriangleNum > 0) _blueTriangleNum -= 50;
+			break;
+
+		default:
+			break;
+		}
+
+		resetTest();
+	}
+
+	void PhysicsContactTest::onIncrease(Ref* sender)
+	{
+		switch (dynamic_cast<Node*>(sender)->getTag())
+		{
+		case 1:
+			_yellowBoxNum += 50;
+			break;
+		case 2:
+			_blueBoxNum += 50;
+			break;
+		case 3:
+			_yellowTriangleNum += 50;
+			break;
+		case 4:
+			_blueTriangleNum += 50;
+			break;
+
+		default:
+			break;
+		}
+
+		resetTest();
+	}
+
+	void PhysicsContactTest::resetTest()
+	{
+		removeChildByTag(10 );
+		var 	root = new cc.Node ( );
+		root->setTag(10 );
+		this.addChild ( root);
+
+		var 	s = VisibleRect::getVisibleRect().size;
+		std::string strNum;
+		char buffer[10];
+
+		sprintf(buffer, "%d", _yellowBoxNum);
+		var 	label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
+		root->addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2, s.height-50 ) );
+
+		sprintf(buffer, "%d", _blueBoxNum);
+		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
+		root->addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2, s.height-90 ) );
+
+		sprintf(buffer, "%d", _yellowTriangleNum);
+		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
+		root->addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2, s.height-130 ) );
+
+		sprintf(buffer, "%d", _blueTriangleNum);
+		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
+		root->addChild(label, 1);
+		label.setPosition ( cp.v ( s.width/2, s.height-170 ) );
+
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1, 0.0f)) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		root->addChild(wall);
+
+		var 	contactListener = EventListenerPhysicsContact::create();
+		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsContactTest::onContactBegin, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+
+		// yellow box, will collide with itself and blue box.
+		for (int i = 0; i < _yellowBoxNum; ++i)
+		{
+			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
+			Size winSize = VisibleRect::getVisibleRect().size;
+			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
+			position.x = position.x * CCRANDOM_0_1();
+			position.y = position.y * CCRANDOM_0_1();
+			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
+			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
+			var 	box = makeBox(position, size, 1, PhysicsMaterial(0.1, 1, 0.0f) );
+			box.getPhysicsBody ( ).setVelocity ( velocity);
+			box.getPhysicsBody ( ).setCategoryBitmask(0x01);    // 0001
+			box.getPhysicsBody ( ).setContactTestBitmask(0x04); // 0100
+			box.getPhysicsBody ( ).setCollisionBitmask(0x03);   // 0011
+			root->addChild(box);
+		}
+
+		// blue box, will collide with blue box.
+		for (int i = 0; i < _blueBoxNum; ++i)
+		{
+			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
+			Size winSize = VisibleRect::getVisibleRect().size;
+			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
+			position.x = position.x * CCRANDOM_0_1();
+			position.y = position.y * CCRANDOM_0_1();
+			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
+			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
+			var 	box = makeBox(position, size, 2, PhysicsMaterial(0.1, 1, 0.0f) );
+			box.getPhysicsBody ( ).setVelocity ( velocity);
+			box.getPhysicsBody ( ).setCategoryBitmask(0x02);    // 0010
+			box.getPhysicsBody ( ).setContactTestBitmask(0x08); // 1000
+			box.getPhysicsBody ( ).setCollisionBitmask(0x01);   // 0001
+			root->addChild(box);
+		}
+
+		// yellow triangle, will collide with itself and blue box.
+		for (int i = 0; i < _yellowTriangleNum; ++i)
+		{
+			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
+			Size winSize = VisibleRect::getVisibleRect().size;
+			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
+			position.x = position.x * CCRANDOM_0_1();
+			position.y = position.y * CCRANDOM_0_1();
+			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
+			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
+			var 	triangle = makeTriangle(position, size, 1, PhysicsMaterial(0.1, 1, 0.0f) );
+			triangle.getPhysicsBody ( ).setVelocity ( velocity);
+			triangle.getPhysicsBody ( ).setCategoryBitmask(0x04);    // 0100
+			triangle.getPhysicsBody ( ).setContactTestBitmask(0x01); // 0001
+			triangle.getPhysicsBody ( ).setCollisionBitmask(0x06);   // 0110
+			root->addChild(triangle);
+		}
+
+		// blue triangle, will collide with yellow box.
+		for (int i = 0; i < _blueTriangleNum; ++i)
+		{
+			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
+			Size winSize = VisibleRect::getVisibleRect().size;
+			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
+			position.x = position.x * CCRANDOM_0_1();
+			position.y = position.y * CCRANDOM_0_1();
+			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
+			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
+			var 	triangle = makeTriangle(position, size, 2, PhysicsMaterial(0.1, 1, 0.0f) );
+			triangle.getPhysicsBody ( ).setVelocity ( velocity);
+			triangle.getPhysicsBody ( ).setCategoryBitmask(0x08);    // 1000
+			triangle.getPhysicsBody ( ).setContactTestBitmask(0x02); // 0010
+			triangle.getPhysicsBody ( ).setCollisionBitmask(0x01);   // 0001
+			root->addChild(triangle);
+		}
+	}
+
+	bool PhysicsContactTest::onContactBegin(PhysicsContact& contact)
+	{
+		PhysicsBody* a = contact.getShapeA()->getBody();
+		PhysicsBody* b = contact.getShapeB()->getBody();
+		PhysicsBody* body = (a->getCategoryBitmask() == 0x04 || a->getCategoryBitmask() == 0x08) ? a : b;
+		CC_UNUSED_PARAM(body);
+		CC_ASSERT(body->getCategoryBitmask() == 0x04 || body->getCategoryBitmask() == 0x08);
+
+		return true;
+	}
+
+	*/
+});
+
+/////////////////////////////////////////////
+PhysicsPositionRotationTest = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Position/Rotation Test";			
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this.onToggleDebug ( );
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+
+		var 	touchListener = EventListenerTouchOneByOne::create();
+		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsDemo::onTouchBegan, this);
+		touchListener->onTouchMoved = CC_CALLBACK_2(PhysicsDemo::onTouchMoved, this);
+		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemo::onTouchEnded, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		addChild(wall);
+
+		// anchor test
+		var 	anchorNode = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		anchorNode->setAnchorPoint(cp.v ( 0.1, 0.9f) );
+		anchorNode.setPosition ( 100, 100 );
+		anchorNode->setScale(0.25);
+		addChild(anchorNode);
+		anchorNode.setPhysicsBody ( cc.PhysicsBody.createBox ( anchorNode->getContentSize ( )*anchorNode->getScale()) );
+		anchorNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+
+		//parent test
+		var 	parent = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		parent.setPosition ( 200, 100 );
+		parent->setScale(0.25);
+		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( parent->getContentSize ( )*anchorNode->getScale()) );
+		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		addChild(parent);
+
+		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
+		leftBall.setPosition ( -30, 0 );
+		leftBall->cocos2d::Node::setScale(2);
+		leftBall.setPhysicsBody ( PhysicsBody::createCircle(leftBall->getContentSize ( ).width) );
+		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		parent->addChild(leftBall);
+
+		// offset position rotation test
+		var 	offsetPosNode = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		offsetPosNode.setPosition ( 100, 200 );
+		offsetPosNode.setPhysicsBody ( cc.PhysicsBody.createBox ( offsetPosNode->getContentSize ( )/2) );
+		offsetPosNode.getPhysicsBody ( ).setPositionOffset(-cp.v ( offsetPosNode->getContentSize ( )/2) );
+		offsetPosNode.getPhysicsBody ( ).setRotationOffset(45);
+		offsetPosNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		addChild(offsetPosNode);
+		*/
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsSetGravityEnableTest = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Set Gravity Enable Test";		
+		this._subtitle = "only yellow box drop down";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		/*
+		var 	touchListener = EventListenerTouchOneByOne::create();
+		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsDemo::onTouchBegan, this);
+		touchListener->onTouchMoved = CC_CALLBACK_2(PhysicsDemo::onTouchMoved, this);
+		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemo::onTouchEnded, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+		// wall
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		addChild(wall);
+
+		// common box
+		var 	commonBox = makeBox(cp.v ( 100, 100 ), cc.size ( 50, 50 ), 1);
+		commonBox.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		addChild(commonBox);
+
+		var 	box = makeBox(cp.v ( 200, 100 ), cc.size ( 50, 50 ), 2);
+		box.getPhysicsBody ( ).setMass(20 );
+		box.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		box.getPhysicsBody ( ).setGravityEnable ( false );
+		addChild(box);
+
+		var 	ball = this.makeBall ( cp.v ( 200, 200 ), 50 );
+		ball->setTag(2);
+		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		ball.getPhysicsBody ( ).setGravityEnable ( false );
+		addChild(ball );
+		ball.getPhysicsBody ( ).setMass(50 );
+		scheduleOnce(CC_SCHEDULE_SELECTOR(PhysicsSetGravityEnableTest::onScheduleOnce), 1.0 );
+		*/
+	},
+	
+	/*
+	void PhysicsSetGravityEnableTest::onScheduleOnce(float delta)
+	{
+		var 	ball = getChildByTag(2);
+		ball.getPhysicsBody ( ).setMass(200 );
+
+		this._scene.getPhysicsWorld ( ).setGravity(cp.v ( 0, 98) );
+	}
+	*/
+});
+
+/////////////////////////////////////////////
+Bug5482 = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "bug 5482: setPhysicsBodyTest";			
+		this._subtitle = "change physics body to the other.";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		/*
+		this.onToggleDebug ( );
+
+		
+		var 	touchListener = EventListenerTouchOneByOne::create();
+		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsDemo::onTouchBegan, this);
+		touchListener->onTouchMoved = CC_CALLBACK_2(PhysicsDemo::onTouchMoved, this);
+		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemo::onTouchEnded, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+		_bodyInA = false;
+
+		// wall
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		addChild(wall);
+
+		//button
+		MenuItemFont::setFontcc.size ( 18);
+		_button = MenuItemFont::create("Set Body To A", CC_CALLBACK_1(Bug5482::changeBodyCallback, this) );
+
+		var 	menu = Menu::create(_button, nullptr);
+		this.addChild ( menu);
+
+		_nodeA = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		_nodeA.setPosition ( VisibleRect.center ( ).x - 150, 100 );
+		this.addChild ( _nodeA);
+
+		_nodeB = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		_nodeB.setPosition ( VisibleRect.center ( ).x + 150, 100 );
+		this.addChild ( _nodeB);
+
+		_body = cc.PhysicsBody.createBox ( _nodeA->getContentSize ( ) );
+		_body->setTag ( DRAG_BODYS_TAG );
+		_body->retain();
+		*/
+	}
+});
+
+/////////////////////////////////////////////
+PhysicsFixedUpdate = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Fixed Update Test";		
+		this._subtitle = "The secend ball should not run across the wall";
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this._scene.getPhysicsWorld ( ).setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+
+		// wall
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1, 0.0f)) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		this.addChild ( wall);
+
+		addBall();
+
+		scheduleOnce(CC_SCHEDULE_SELECTOR(PhysicsFixedUpdate::updateStart), 2);
+		*/
+	}
+	
+	/*
+	void PhysicsFixedUpdate::addBall()
+	{
+		var 	ball = new cc.Sprite ( "res/Images/ball.png" );
+		ball.setPosition ( 100, 100 );
+		ball.setPhysicsBody ( PhysicsBody::createCircle(ball->getContentSize ( ).width/2, PhysicsMaterial(0.1, 1, 0.0f)) );
+		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		ball.getPhysicsBody ( ).setVelocity ( Point(1000, 20 ) );
+		this.addChild ( ball );
+	}
+	
+	void PhysicsFixedUpdate::updateStart(float delta)
+{
+    addBall();
+
+    this._scene.getPhysicsWorld ( ).setAutoStep ( false );
+    scheduleUpdate();
+}
+
+void PhysicsFixedUpdate::update(float delta)
+{
+
+    // use fixed time and calculate 3 times per frame makes physics simulate more precisely.
+    for (int i = 0; i < 3; ++i)
+    {
+        this._scene.getPhysicsWorld ( ).step(1/180.0 );
+    }
+}
+	*/
+});
+
+/////////////////////////////////////////////
+PhysicsTransformTest = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._title = "Physics transform test";			
+	},
+
+	onEnter:function ( ) 
+	{
+		this._super ( ); 
+		
+		/*
+		this.onToggleDebug ( );
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+
+		var 	touchListener = EventListenerTouchOneByOne::create();
+		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsTransformTest::onTouchBegan, this);
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+		var 	wall = new cc.Node ( );
+		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPosition ( VisibleRect.center ( ) );
+		addChild(wall);
+
+		//parent test
+		var 	parent = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		parent.setPosition ( 200, 100 );
+		parent->setScale(0.25);
+		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( parent->getContentSize ( )*parent->getScale(), PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		parent->setTag(1);
+		addChild(parent);
+
+		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
+		leftBall.setPosition ( -30, 0 );
+		leftBall->cocos2d::Node::setScale(2);
+		leftBall.setPhysicsBody ( PhysicsBody::createCircle(leftBall->getContentSize ( ).width, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		parent->addChild(leftBall);
+
+		ScaleTo* scaleTo = ScaleTo::create(2.0, 0.5);
+		ScaleTo* scaleBack = ScaleTo::create(2.0, 1.0 );
+		parent->runAction(RepeatForever::create(Sequence::create(scaleTo, scaleBack, nullptr)) );
+
+		var 	normal = new cc.Sprite ( "res/Images/YellowSquare.png" );
+		normal.setPosition ( 300, 100 );
+		normal->setScale(0.25, 0.5);
+		var 	size = parent->getContentSize ( );
+		size.width *= normal->getScaleX();
+		size.height *= normal->getScaleY();
+		normal.setPhysicsBody ( cc.PhysicsBody.createBox ( size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		normal.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+		addChild(normal);
+
+		var 	bullet = new cc.Sprite ( "res/Images/ball.png" );
+		bullet.setPosition ( 200, 200 );
+		bullet.setPhysicsBody ( PhysicsBody::createCircle(bullet->getContentSize ( ).width/2, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 100, 100 ) );
+		this.addChild ( bullet);
+
+
+		MoveBy* move = MoveBy::create(2.0, cp.v ( 100, 100 ) );
+		MoveBy* move2 = MoveBy::create(2.0, cp.v ( -200, 0 ) );
+		MoveBy* move3 = MoveBy::create(2.0, cp.v ( 100, -100 ) );
+		ScaleTo* scale = ScaleTo::create(3.0, 0.3 );
+		ScaleTo* scale2 = ScaleTo::create(3.0, 1.0 );
+
+		RotateBy* rotate = RotateBy::create(6.0, 360 );
+
+		this->runAction(RepeatForever::create(Sequence::create(move, move2, move3, nullptr)) );
+		this->runAction(RepeatForever::create(Sequence::create(scale, scale2, nullptr)) );
+		this->runAction(RepeatForever::create(rotate) );
+		*/
+	}
+	/*
+	bool PhysicsTransformTest::onTouchBegan(Touch *touch, Event *event)
+	{
+		Node* child = this->getChildByTag(1);
+		child.setPosition ( this->convertTouchToNodeSpace(touch) );
+		return false;
+	}
+	*/
+});
+
 // Physics Demos
 var arrayOfPhysicsTest = 
 [
@@ -960,6 +1983,18 @@ var arrayOfPhysicsTest =
  	PhysicsDemoPyramidStack,	
  	PhysicsDemoClickAdd,
  	PhysicsDemoRayCast,
+ 	PhysicsDemoJoints,
+ 	PhysicsDemoActions,
+ 	PhysicsDemoPump,
+ 	PhysicsDemoOneWayPlatform,
+// 	PhysicsDemoSlice,
+// 	PhysicsDemoBug3988,
+// 	PhysicsContactTest,
+// 	PhysicsPositionRotationTest,
+// 	PhysicsSetGravityEnableTest,
+// 	Bug5482,
+// 	PhysicsFixedUpdate,
+// 	PhysicsTransformTest
 ];
 
 var nextPhysicsTest = function ( )
