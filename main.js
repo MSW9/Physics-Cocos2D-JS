@@ -27,34 +27,16 @@
  *
  * ----------------------------------------------------------------------------------- */ 
 
-var msw = msw || {};
-
-var SCR_W = 0;
-var SCR_H = 0;
-
-var SCR_W2 = 0;
-var SCR_H2 = 0;
-
-msw.rand = function ( )
-{
-	return parseInt ( Math.random ( ) * 0xffffff );
-};
-
 cc.game.onStart = function ( )
 {
 	cc.view.adjustViewPort ( true );
-	cc.view.setDesignResolutionSize ( 480, 320, cc.ResolutionPolicy.SHOW_ALL );
+	cc.view.setDesignResolutionSize ( 480, 320, cc.ResolutionPolicy.NO_BORDER );
 	cc.view.resizeWithBrowserSize ( true );
 
-	cc.LoaderScene.preload ( msw.RESOURCES, function ( ) 
+	cc.LoaderScene.preload ( RESOURCES, function ( ) 
 	{
-		SCR_W = cc.winSize.width;
-		SCR_H = cc.winSize.height; 
-
-		SCR_W2 = SCR_W / 2;
-		SCR_H2 = SCR_H / 2;  
-
-		msw.PhysicTestScene.runThisTest ( );		
+		var		scene = new PhysicsTestScene ( );	
+		scene.runThisTest ( );		
 	}, this );
 };
 

@@ -12,7 +12,6 @@
     ],
     "jsList":[
         "src/Base/CCNodeEx.js",
-        "src/Base/CCSpriteEx.js",
         "src/Base/CCSceneEx.js",
         "src/Physics/Chipmunk/CCPhysicsBodyInfo_chipmunk.js",
         "src/Physics/Chipmunk/CCPhysicsShapeInfo_chipmunk.js",
@@ -24,6 +23,7 @@
         "src/Physics/CCPhysicsJoint.js",
         "src/Physics/CCPhysicsWorld.js",
         "src/Physics/CCPhysicsContact.js",
+        "src/VisibleRect.js",
         "src/PhysicsTest.js",
         "src/Resource.js"
     ]

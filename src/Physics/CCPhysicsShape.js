@@ -740,12 +740,12 @@ cc.PhysicsShapeBox = cc.PhysicsShapePolygon.extend
 		cc.PhysicsShape.prototype.init.call ( this, cc.PhysicsShape.Type.BOX );
 
 		var 	points = 
-			[
+		[
 			 -size.width / 2, -size.height / 2,
 			 -size.width / 2, +size.height / 2,
 			 +size.width / 2, +size.height / 2,
 			 +size.width / 2, -size.height / 2
-			 ];
+		];
 
 		var 	shape = new cp.PolyShape ( this._info.getSharedBody ( ), points, offset );
 
@@ -826,11 +826,11 @@ cc.PhysicsShapeEdgeSegment = cc.PhysicsShape.extend
     		var 	factorY = this._newScaleY / this._scaleY;
 
     		var		shape = this._info.getShapes ( ) [ 0 ];    	
-			var 	a = shape.a;											
+			var 	a = cp.v ( shape.a.x, shape.a.y );											
 			a.x *= factorX;
 			a.y *= factorY;
 
-			var 	b = shape.b;
+			var 	b = cp.v ( shape.b.x, shape.b.y );	
 			b.x *= factorX;
 			b.y *= factorY;		
 
@@ -877,7 +877,7 @@ cc.PhysicsShapeEdgePolygon = cc.PhysicsShape.extend
 			{
 				return false;				
 			}
-			
+
 			shape.setElasticity ( 1 );
 			shape.setFriction ( 1 );
 						
@@ -932,16 +932,16 @@ cc.PhysicsShapeEdgePolygon = cc.PhysicsShape.extend
 			for ( var idx in shapes ) 
 			{
 				var		shape = shapes [ idx ];
-								
-				var 	a = shape.a;											
+									
+				var 	a = cp.v ( shape.a.x, shape.a.y );											
 				a.x *= factorX;
 				a.y *= factorY;
 				
-				var 	b = shape.b;
+				var 	b = cp.v ( shape.b.x, shape.b.y );	
 				b.x *= factorX;
 				b.y *= factorY;		
-				
-				shape.setEndpoints ( a, b );								
+
+				shape.setEndpoints ( a, b );					
 			}
 		}
 
@@ -1065,7 +1065,7 @@ cc.PhysicsShapeEdgeChain = cc.PhysicsShapeEdgePolygon.extend
 		for ( var idx in shapes )
 		{
 			var		shape = shapes [ idx ];
-			points [ i++ ] = shape.a;
+			points [ i++ ] = cp.v ( shape.a.x, shape.a.y );	
 		}
 
 		points [ i++ ] = shapes [ shapes.length - 1 ].b;
@@ -1080,7 +1080,7 @@ cc.PhysicsShapeEdgeChain = cc.PhysicsShapeEdgePolygon.extend
 		for ( var idx in shapes )
 		{
 			var		shape = shapes [ idx ];
-			outPoints [ i++ ] = shape.a;
+			outPoints [ i++ ] = cp.v ( shape.a.x, shape.a.y );	
 		}
 
 		outPoints [ i++ ] = shapes [ shapes.length - 1 ].b;
@@ -1103,11 +1103,11 @@ cc.PhysicsShapeEdgeChain = cc.PhysicsShapeEdgePolygon.extend
 			{
 				var		shape = shapes [ idx ];
 
-				var 	a = shape.a;											
+				var 	a = cp.v ( shape.a.x, shape.a.y );											
 				a.x *= factorX;
 				a.y *= factorY;
 
-				var 	b = shape.b;
+				var 	b = cp.v ( shape.b.x, shape.b.y );		
 				b.x *= factorX;
 				b.y *= factorY;		
 

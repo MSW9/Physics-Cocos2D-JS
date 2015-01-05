@@ -27,14 +27,14 @@
  *
  * ----------------------------------------------------------------------------------- */ 
 
-msw.RESOURCES = 
+RESOURCES = 
 [	
-	"res/b1.png",
-	"res/b2.png",
-	"res/r1.png",
-	"res/r1.png",
-	"res/f1.png",
-	"res/f2.png",	 
-	"res/ball.png",
-	"res/grossini_dance_atlas.png"
+ 	"res/Images/b1.png",
+ 	"res/Images/b2.png",
+ 	"res/Images/r1.png",
+ 	"res/Images/r1.png",
+ 	"res/Images/f1.png",
+ 	"res/Images/f2.png",	 
+ 	"res/Images/ball.png",
+ 	"res/Images/grossini_dance_atlas.png"
 ];

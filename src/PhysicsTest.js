@@ -23,16 +23,29 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-msw.PhysicTest = 
-[
- 	{ create:function ( ) { return new msw.LogoSmash 	( ); } },
- 	{ create:function ( ) { return new msw.PyramidStack ( ); } }
-];
+var physicsTestSceneIdx = -1;
 
-msw.PhysicTestIndex = 0;
+var PhysicsTestScene = cc.Scene.extend 
+({
+	ctor:function ( )
+	{
+		this._super ( );		
+				
+		this.initWithPhysics ( );		
+	},
+	
+	runThisTest:function ( num )
+	{	
+		physicsTestSceneIdx = ( num || num == 0 ) ? ( num - 1 ) : -1;
+		
+		var 	layer = nextPhysicsTest ( );
+		this.addChild ( layer );
+		cc.director.runScene ( this );		
+	}
+});
 
 var BASE_TEST_MENUITEM_PREV_TAG 	= 1;
-var BASE_TEST_MENUITEM_RESET_TAG	= 2;
+var BASE_TEST_MENUITEM_RESET_TAG 	= 2;
 var BASE_TEST_MENUITEM_NEXT_TAG 	= 3;
 
 var BASE_TEST_MENU_TAG 				= 10;
@@ -42,88 +55,136 @@ var BASE_TEST_SUBTITLE_TAG 			= 12;
 var	STATIC_COLOR					= cc.color ( 255, 0, 0, 255 );
 var	DRAG_BODYS_TAG 					= 0x80;
 
-msw.PhysicTestScene = cc.SceneEx.extend 
+var PhysicsBaseLayer = cc.LayerGradient.extend 
 ({
-	ctor:function ( ) 
-	{		
-		this._super ( );
+	ctor:function ( )
+	{
+		this._super ( cc.color ( 0, 0, 0, 255 ), cc.color ( 98 * 0.5, 99 * 0.5, 117 * 0.5, 255 ) );	
 		
-		this._debugDraw = false;
-		this._spriteTexture = new cc.SpriteBatchNode ( "res/grossini_dance_atlas.png", 100 ).getTexture ( );
-
-		var 	label = new cc.LabelTTF ( this.getTitle ( ), "Arial", 28 );
-		this.addChild ( label, 100, BASE_TEST_TITLE_TAG );
-		label.x = SCR_W2;
-		label.y = SCR_H - 50;
-
-		var 	label = new cc.LabelTTF ( this.getSubTitle ( ), "Thonburi", 16 );
-		this.addChild ( label, 101, BASE_TEST_SUBTITLE_TAG );
-		label.x = SCR_W2;
-		label.y = SCR_H - 80;		
-		
-		cc.MenuItemFont.setFontSize ( 18 );
-		
-		var 	item1 = new cc.MenuItemImage ( "res/b1.png", "res/b2.png", this.onBackCallback   , this );
-		var 	item2 = new cc.MenuItemImage ( "res/r1.png", "res/r2.png", this.onRestartCallback, this );
-		var 	item3 = new cc.MenuItemImage ( "res/f1.png", "res/f2.png", this.onNextCallback   , this );		
-		var		item4 = new cc.MenuItemFont  ( "Toggle debug", this.toggleDebug, this );
-		
-		item1.tag = BASE_TEST_MENUITEM_PREV_TAG;
-		item2.tag = BASE_TEST_MENUITEM_RESET_TAG;
-		item3.tag = BASE_TEST_MENUITEM_NEXT_TAG;
-
-		var 	menu = new cc.Menu ( item1, item2, item3, item4 );
-
-		menu.x = 0;
-		menu.y = 0;
-
-		var 	width = item2.width, height = item2.height;
-		item1.x = SCR_W2 - width * 2;
-		item1.y = height / 2;
-		item2.x = SCR_W2;
-		item2.y = height / 2;
-		item3.x = SCR_W2 + width * 2;
-		item3.y = height / 2;
-		item4.x = SCR_W - 80;
-		item4.y = SCR_H - 20;
-
-		this.addChild ( menu, 102, BASE_TEST_MENU_TAG );
+		this._title 	= "PhysicsTest";
+		this._subtitle 	= "";
 	},
-
+	
 	getTitle:function ( )
 	{
-		return "PhysicsTest";
+		var t = "";
+		// some tests use "this.title()" and others use "this._title";
+		if ( 'title' in this )
+			t = this.title ( );
+		else if ( '_title' in this || this._title )
+			t = this._title;
+		return t;
 	},
-
-	getSubTitle:function ( )
+	
+	getSubtitle:function ( )
 	{
-		return "";
+		var st = "";
+		// some tests use "this.subtitle()" and others use "this._subtitle";
+		if ( this.subtitle )
+			st = this.subtitle ( );
+		else if ( this._subtitle )
+			st = this._subtitle;
+
+		return st;
+	},
+	
+	onEnter:function ( )
+	{
+		this._super ( );
+
+		var 	t = this.getTitle ( );
+		var 	label = new cc.LabelTTF ( t, "Arial", 28 );
+		this.addChild ( label, 100, BASE_TEST_TITLE_TAG );		
+		label.setPosition ( VisibleRect.center ( ).x, VisibleRect.top ( ).y - 20 );
+
+		var 	st = this.getSubtitle ( );
+		if ( st ) 
+		{
+			var 	l = new cc.LabelTTF ( st.toString(), "Thonburi", 16 );
+			this.addChild ( l, 101, BASE_TEST_SUBTITLE_TAG );
+			l.setPosition ( VisibleRect.center ( ).x, VisibleRect.top ( ).y - 50 );
+		}
+
+		var 	item1 = new cc.MenuItemImage ( "res/Images/b1.png", "res/Images/b2.png", this.onBackCallback	, this );
+		var 	item2 = new cc.MenuItemImage ( "res/Images/r1.png", "res/Images/r2.png", this.onRestartCallback	, this );
+		var 	item3 = new cc.MenuItemImage ( "res/Images/f1.png", "res/Images/f2.png", this.onNextCallback	, this );
+
+		item1.setTag ( BASE_TEST_MENUITEM_PREV_TAG  );
+		item2.setTag ( BASE_TEST_MENUITEM_RESET_TAG );
+		item3.setTag ( BASE_TEST_MENUITEM_NEXT_TAG  );
+		item1.setPosition ( VisibleRect.center ( ).x - item2.getContentSize ( ).width * 2, VisibleRect.bottom ( ).y + item1.getContentSize ( ).height / 2 );
+		item2.setPosition ( VisibleRect.center ( ).x                                     , VisibleRect.bottom ( ).y + item2.getContentSize ( ).height / 2 );
+		item3.setPosition ( VisibleRect.center ( ).x + item2.getContentSize ( ).width * 2, VisibleRect.bottom ( ).y + item3.getContentSize ( ).height / 2 );
+
+		var		menu = new cc.Menu ( item1, item2, item3 );
+		menu.setPosition ( 0, 0 );
+		this.addChild ( menu, 102, BASE_TEST_MENU_TAG );
+		
+		/////////////////////////////////
+		this._scene = this.getParent ( );
+		this._spriteTexture = new cc.SpriteBatchNode ( "res/Images/grossini_dance_atlas.png", 100 ).getTexture ( );
+
+		this._debugDraw = false;
+
+		// Menu to toggle debug physics on / off
+		var 	item = new cc.MenuItemFont ( "Physics On/Off", this.onToggleDebug, this );
+		item.setFontSize ( 24 );
+		var 	menu = new cc.Menu ( item );
+		menu.setPosition ( VisibleRect.right ( ).x - 100, VisibleRect.top ( ).y - 80 );
+		this.addChild ( menu );				
+	},
+	
+	onCleanup:function ( ) 
+	{
+		// Not compulsory, but recommended: cleanup the scene
+		this.unscheduleUpdate ( );
 	},
 	
 	onRestartCallback:function ( sender )
 	{
-		msw.PhysicTestScene.runThisTest ( );
+		this.onCleanup ( );
+		
+		var 	s = new PhysicsTestScene ( );
+		s.addChild ( restartPhysicsTest ( ) );
+		cc.director.runScene ( s );
 	},
-
+	
 	onNextCallback:function ( sender ) 
 	{
-		msw.PhysicTestIndex++;
-		msw.PhysicTestIndex = msw.PhysicTestIndex % msw.PhysicTest.length;
-		msw.PhysicTestScene.runThisTest ( );
-	},
+		this.onCleanup ( );
 
+		var 	s = new PhysicsTestScene ( );
+		s.addChild ( nextPhysicsTest ( ) );
+		cc.director.runScene ( s );
+	},
+	
 	onBackCallback:function ( sender )
 	{
-		msw.PhysicTestIndex = ( msw.PhysicTestIndex == 0 ? msw.PhysicTest.length : msw.PhysicTestIndex ) - 1;		
-		msw.PhysicTestScene.runThisTest ( );
-	},	
+		this.onCleanup ( );
 
-	toggleDebug:function ( sender )
+		var 	s = new PhysicsTestScene ( );
+		s.addChild ( previousPhysicsTest ( ) );
+		cc.director.runScene ( s );
+	},	
+	
+	onToggleDebug:function ( sender )
 	{
 		this._debugDraw = !this._debugDraw;
-		this.getPhysicsWorld ( ).setDebugDrawMask ( this._debugDraw ? cc.PhysicsWorld.DEBUGDRAW_ALL : cc.PhysicsWorld.DEBUGDRAW_NONE );
+		this._scene.getPhysicsWorld ( ).setDebugDrawMask ( this._debugDraw ? cc.PhysicsWorld.DEBUGDRAW_ALL : cc.PhysicsWorld.DEBUGDRAW_NONE );
 	},
+	
+	makeBall:function ( point, radius, material )
+	{
+		var 	ball = new cc.Sprite ( this._ball.texture );
+		var 	body = cc.PhysicsBody.createCircle ( radius, material );		
 
+		ball.setScale ( 0.13 * radius );
+		ball.setPhysicsBody ( body );				
+		ball.setPosition ( point );
+
+		return ball;
+	},
+	
 	addGrossiniAtPosition:function ( p, scale )
 	{
 		if ( scale === undefined )	scale = 1.0;
@@ -136,176 +197,238 @@ msw.PhysicTestScene = cc.SceneEx.extend
 		posx = parseInt ( posx % 4 ) * 85;
 		posy = parseInt ( posy % 3 ) * 121;
 
-		var 	sp = new cc.SpriteEx ( this._spriteTexture, cc.rect ( posx, posy, 85, 121 ) );
+		var 	sp = new cc.Sprite ( this._spriteTexture, cc.rect ( posx, posy, 85, 121 ) );
 		sp.setScale ( scale );
 		sp.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( 48.0 * scale, 108.0 * scale ) ) );
-		this.addChild ( sp );
+		this._scene.addChild ( sp );
 		sp.setPosition ( p );
 
 		return sp;
 	}	
 });
 
-msw.PhysicTestScene.runThisTest = function ( )
+////////////////////////////////
+PhysicsDemoLogoSmash = ( function ( ) 
 {
-	var		scene = msw.PhysicTest [ msw.PhysicTestIndex ].create ( );
-	cc.director.runScene ( scene );	
-}
+	var 	logo_width  	= 188;
+	var 	logo_height  	= 35;
+	var 	logo_row_length = 24;
 
-/////////////////////////////////////////////
-var		logo_width 		= 188;
-var		logo_height 	= 35;
-var		logo_row_length = 24;
-var 	logo_image 		=
-[
-	 15,-16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,-64,15,63,-32,-2,0,0,0,0,0,0,0,
-	 0,0,0,0,0,0,0,0,0,0,0,31,-64,15,127,-125,-1,-128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	 0,0,0,127,-64,15,127,15,-1,-64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,-64,15,-2,
-	 31,-1,-64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,-64,0,-4,63,-1,-32,0,0,0,0,0,0,
-	 0,0,0,0,0,0,0,0,0,0,1,-1,-64,15,-8,127,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	 1,-1,-64,0,-8,-15,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-31,-1,-64,15,-8,-32,
-	 -1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,-15,-1,-64,9,-15,-32,-1,-32,0,0,0,0,0,
-	 0,0,0,0,0,0,0,0,0,0,31,-15,-1,-64,0,-15,-32,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,
-	 0,0,63,-7,-1,-64,9,-29,-32,127,-61,-16,63,15,-61,-1,-8,31,-16,15,-8,126,7,-31,
-	 -8,31,-65,-7,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-2,63,-8,31,-4,-1,15,-13,
-	 -4,63,-1,-3,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-2,63,-8,31,-4,-1,15,-13,
-	 -2,63,-1,-3,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
-	 -2,63,-33,-1,-1,-32,9,-25,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
-	 -1,63,-33,-1,-1,-16,9,-25,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
-	 -1,63,-49,-1,-1,-8,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
-	 -1,-65,-49,-1,-1,-4,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
-	 -1,-65,-57,-1,-1,-2,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
-	 -1,-1,-57,-1,-1,-1,9,-57,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
-	 -1,-61,-1,-1,-1,-119,-57,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
-	 -1,-61,-1,-1,-1,-55,-49,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
-	 -1,-63,-1,-1,-1,-23,-49,-32,127,-57,-1,-1,-97,-25,-1,-1,63,-1,-1,-4,-1,15,-13,
-	 -1,-1,-63,-1,-1,-1,-16,-49,-32,-1,-25,-1,-1,-97,-25,-1,-1,63,-33,-5,-4,-1,15,
-	 -13,-1,-1,-64,-1,-9,-1,-7,-49,-32,-1,-25,-8,127,-97,-25,-1,-1,63,-33,-5,-4,-1,
-	 15,-13,-1,-1,-64,-1,-13,-1,-32,-49,-32,-1,-25,-8,127,-97,-25,-1,-2,63,-49,-13,
-	 -4,-1,15,-13,-1,-1,-64,127,-7,-1,-119,-17,-15,-1,-25,-8,127,-97,-25,-1,-2,63,
-	 -49,-13,-4,-1,15,-13,-3,-1,-64,127,-8,-2,15,-17,-1,-1,-25,-8,127,-97,-25,-1,
-	 -8,63,-49,-13,-4,-1,15,-13,-3,-1,-64,63,-4,120,0,-17,-1,-1,-25,-8,127,-97,-25,
-	 -8,0,63,-57,-29,-4,-1,15,-13,-4,-1,-64,63,-4,0,15,-17,-1,-1,-25,-8,127,-97,
-	 -25,-8,0,63,-57,-29,-4,-1,-1,-13,-4,-1,-64,31,-2,0,0,103,-1,-1,-57,-8,127,-97,
-	 -25,-8,0,63,-57,-29,-4,-1,-1,-13,-4,127,-64,31,-2,0,15,103,-1,-1,-57,-8,127,
-	 -97,-25,-8,0,63,-61,-61,-4,127,-1,-29,-4,127,-64,15,-8,0,0,55,-1,-1,-121,-8,
-	 127,-97,-25,-8,0,63,-61,-61,-4,127,-1,-29,-4,63,-64,15,-32,0,0,23,-1,-2,3,-16,
-	 63,15,-61,-16,0,31,-127,-127,-8,31,-1,-127,-8,31,-128,7,-128,0,0
-];
+	var 	logo_image 		= 
+	[
+		15,-16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,-64,15,63,-32,-2,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,31,-64,15,127,-125,-1,-128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,127,-64,15,127,15,-1,-64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,-64,15,-2,
+		31,-1,-64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,-64,0,-4,63,-1,-32,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,1,-1,-64,15,-8,127,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		1,-1,-64,0,-8,-15,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-31,-1,-64,15,-8,-32,
+		-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,-15,-1,-64,9,-15,-32,-1,-32,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,31,-15,-1,-64,0,-15,-32,-1,-32,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,63,-7,-1,-64,9,-29,-32,127,-61,-16,63,15,-61,-1,-8,31,-16,15,-8,126,7,-31,
+		-8,31,-65,-7,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-2,63,-8,31,-4,-1,15,-13,
+		-4,63,-1,-3,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-2,63,-8,31,-4,-1,15,-13,
+		-2,63,-1,-3,-1,-64,9,-29,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
+		-2,63,-33,-1,-1,-32,9,-25,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
+		-1,63,-33,-1,-1,-16,9,-25,-32,0,7,-8,127,-97,-25,-1,-1,63,-4,63,-4,-1,15,-13,
+		-1,63,-49,-1,-1,-8,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
+		-1,-65,-49,-1,-1,-4,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
+		-1,-65,-57,-1,-1,-2,9,-57,-32,0,7,-8,127,-97,-25,-8,-1,63,-2,127,-4,-1,15,-13,
+		-1,-1,-57,-1,-1,-1,9,-57,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
+		-1,-61,-1,-1,-1,-119,-57,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
+		-1,-61,-1,-1,-1,-55,-49,-32,0,7,-1,-1,-97,-25,-8,-1,63,-1,-1,-4,-1,15,-13,-1,
+		-1,-63,-1,-1,-1,-23,-49,-32,127,-57,-1,-1,-97,-25,-1,-1,63,-1,-1,-4,-1,15,-13,
+		-1,-1,-63,-1,-1,-1,-16,-49,-32,-1,-25,-1,-1,-97,-25,-1,-1,63,-33,-5,-4,-1,15,
+		-13,-1,-1,-64,-1,-9,-1,-7,-49,-32,-1,-25,-8,127,-97,-25,-1,-1,63,-33,-5,-4,-1,
+		15,-13,-1,-1,-64,-1,-13,-1,-32,-49,-32,-1,-25,-8,127,-97,-25,-1,-2,63,-49,-13,
+		-4,-1,15,-13,-1,-1,-64,127,-7,-1,-119,-17,-15,-1,-25,-8,127,-97,-25,-1,-2,63,
+		-49,-13,-4,-1,15,-13,-3,-1,-64,127,-8,-2,15,-17,-1,-1,-25,-8,127,-97,-25,-1,
+		-8,63,-49,-13,-4,-1,15,-13,-3,-1,-64,63,-4,120,0,-17,-1,-1,-25,-8,127,-97,-25,
+		-8,0,63,-57,-29,-4,-1,15,-13,-4,-1,-64,63,-4,0,15,-17,-1,-1,-25,-8,127,-97,
+		-25,-8,0,63,-57,-29,-4,-1,-1,-13,-4,-1,-64,31,-2,0,0,103,-1,-1,-57,-8,127,-97,
+		-25,-8,0,63,-57,-29,-4,-1,-1,-13,-4,127,-64,31,-2,0,15,103,-1,-1,-57,-8,127,
+		-97,-25,-8,0,63,-61,-61,-4,127,-1,-29,-4,127,-64,15,-8,0,0,55,-1,-1,-121,-8,
+		127,-97,-25,-8,0,63,-61,-61,-4,127,-1,-29,-4,63,-64,15,-32,0,0,23,-1,-2,3,-16,
+		63,15,-61,-16,0,31,-127,-127,-8,31,-1,-127,-8,31,-128,7,-128,0,0
+	];
 
-msw.frand = function ( )
-{
-	return parseInt ( Math.random ( ) * 0xffffff );
-};
-
-msw.LogoSmash = msw.PhysicTestScene.extend 
-({
-	ctor:function ( ) 
-	{
-		this._super ( );
-
-		this.getPhysicsWorld ( ).setGravity ( cp.v ( 0, 0 ) );
-//		this.getPhysicsWorld ( ).setUpdateRate ( 5.0 );
-
-		this._ball = new cc.SpriteBatchNode ( "res/ball.png", logo_image.length );
-		this.addChild ( this._ball );		
-
-		for ( var y = 0; y < logo_height; ++y )
-		{
-			for ( var x = 0; x < logo_width; ++x )
-			{
-				if ( this.get_pixel ( x, y ) )
-				{									
-					var 	x_jitter = 0.05 * cc.random0To1 ( );
-					var 	y_jitter = 0.05 * cc.random0To1 ( );
-
-					var 	ball = this.makeBall 
-					(
-							cp.v ( 2 * ( x - logo_width / 2 + x_jitter ) + SCR_W2, 2 * ( logo_height-y + y_jitter ) + SCR_H2 - logo_height / 2 ),
-							0.95, cc.PhysicsMaterial ( 0.01, 0.0, 0.0 ) 
-					);
-
-					ball.getPhysicsBody ( ).setMass ( 1.0 );
-					ball.getPhysicsBody ( ).setMoment ( cc.PHYSICS_INFINITY );
-
-//					this._ball.addChild ( ball );
-					this.addChild ( ball );
-				}
-			}
-		}
-
-		var 	bullet = this.makeBall ( cp.v ( 400, 0 ), 10, cc.PhysicsMaterial ( cc.PHYSICS_INFINITY, 0, 0 ) );
-		bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 200, 0 ) );	   
-		bullet.setPosition ( cp.v ( -500, SCR_H2 ) );	    
-//		this._ball.addChild ( bullet );
-		this.addChild ( bullet );	 
-	},
-
-	getTitle:function ( )
-	{
-		return "Logo Smash";
-	},	
-
-	get_pixel:function ( x, y )
+	var 	get_pixel = function ( x, y )
 	{
 		return ( logo_image [ ( x >> 3 ) + y * logo_row_length ] >> ( ~x & 0x7 ) ) & 1;
-	},
+	};
+	
+	return PhysicsBaseLayer.extend
+	({
+		ctor:function ( )
+		{
+			this._super ( );
+			
+			this._title = "LogoSmash";		
+		},
+		
+		onEnter:function ( )
+		{
+			this._super ( );
+			
+			this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+//			this._scene.getPhysicsWorld ( ).setUpdateRate ( 5.0 );
 
-	makeBall:function ( point, radius, material )
-	{
-		var 	ball = new cc.SpriteEx ( this._ball.texture );
-		var 	body = cc.PhysicsBody.createCircle ( radius, material );		
+			this._ball = new cc.SpriteBatchNode ( "res/Images/ball.png", logo_image.length );
+			this.addChild ( this._ball );		
 
-		ball.setScale ( 0.13 * radius );
-		ball.setPhysicsBody ( body );				
-		ball.setPosition ( point );
+			for ( var y = 0; y < logo_height; ++y )
+			{
+				for ( var x = 0; x < logo_width; ++x )
+				{
+					if ( get_pixel ( x, y ) )
+					{									
+						var 	x_jitter = 0.05 * cc.random0To1 ( );
+						var 	y_jitter = 0.05 * cc.random0To1 ( );
 
-		return ball;
-	}	
-});
+						var 	ball = this.makeBall
+						(
+							cc.p 
+							( 
+								2 * ( x - logo_width / 2 + x_jitter ) + VisibleRect.center ( ).x,
+								2 * ( logo_height-y + y_jitter ) + VisibleRect.center ( ).y - logo_height / 2
+							),
+							0.95, cc.PhysicsMaterial ( 0.01, 0.0, 0.0 ) 
+						);
 
-/////////////////////////////////////////////
-msw.PyramidStack = msw.PhysicTestScene.extend 
+						ball.getPhysicsBody ( ).setMass ( 1.0 );
+						ball.getPhysicsBody ( ).setMoment ( cc.PHYSICS_INFINITY );
+
+//						this._ball.addChild ( ball );
+						this._scene.addChild ( ball );
+					}
+				}
+			}
+			
+			var 	bullet = this.makeBall ( cp.v ( 400, 0 ), 10, cc.PhysicsMaterial ( cc.PHYSICS_INFINITY, 0, 0 ) );
+			bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 200, 0 ) );	   
+			bullet.setPosition ( cp.v ( -500, VisibleRect.center ( ).y ) );	    
+//			this._ball.addChild ( bullet );
+			this._scene.addChild ( bullet );					
+		},		
+	});
+}) ( );
+
+
+PhysicsDemoPyramidStack = PhysicsBaseLayer.extend
 ({
-	ctor:function ( ) 
+	ctor:function ( )
 	{
 		this._super ( );
-		
-		var 	node = new cc.NodeEx ( );
-		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v ( 0, 50 ), cp.v ( SCR_W, 50 ) ) );
-		this.addChild ( node );
 
-		var 	ball = new cc.SpriteEx ( "res/ball.png" );
+		this._title = "Pyramid Stack";		
+	},
+
+	onEnter:function ( )
+	{
+		this._super ( );
+
+		var 	node = new cc.Node ( );
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
+		this._scene.addChild ( node );
+
+		var 	ball = new cc.Sprite ( "res/Images/ball.png" );
 		ball.setScale ( 1 );
 		ball.setTag ( 100 );
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( 10 ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		ball.setPosition ( cp.v ( SCR_W2, 60 ) );
-		this.addChild ( ball, 0, 100 );
+		ball.setPosition ( cp.v.add ( VisibleRect.bottom ( ), cp.v ( 0, 60 ) ) );
+		this._scene.addChild ( ball, 0, 100 );
 
 		for ( var i = 0; i < 14; i++ )
 		{
 			for ( var j = 0; j <= i; j++ )
 			{
-				var 	sp = this.addGrossiniAtPosition (  cp.v ( SCR_W2 + ( i / 2 - j ) * 11, ( 14 - i ) * 23 + 100 ), 0.2 );
+				var 	sp = this.addGrossiniAtPosition 
+				( 
+					cp.v.add ( VisibleRect.bottom ( ), cp.v ( ( i / 2 - j ) * 11, ( 14 - i ) * 23 + 100 ) ), 0.2 
+				);
 				sp.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 			}
 		}		
-		
-		this.scheduleOnce ( this.updateOnce, 3.0 );
-	},
-	
-	getTitle:function ( )
-	{
-		return "Pyramid Stack";
+
+		this.scheduleOnce ( this.updateOnce, 3.0 );				
 	},		
 	
 	updateOnce:function ( )
 	{
-		var 	ball = this.getChildByTag ( 100 );
+		var 	ball = this._scene.getChildByTag ( 100 );
 
 		ball.setScale ( ball.getScale ( ) * 3 );
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( 30 ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
+	},	
+});
+
+/////////////////////////////////////////////
+PhysicsDemoClickAdd = PhysicsBaseLayer.extend
+({
+	ctor:function ( )
+	{
+		this._super ( );
+
+		this._subtitle = "multi touch to add grossini";		
+	},
+	
+	onEnter:function ( ) 
+	{
+		this._super ( );
+
+		var 	node = new cc.Node ( );
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( cc.size ( VisibleRect.getVisibleRect ( ).width, VisibleRect.getVisibleRect ( ).height ) ) );
+		node.setPosition ( VisibleRect.center ( ) );
+		this._scene.addChild ( node );
+
+		this.addGrossiniAtPosition ( VisibleRect.center ( ) );
+
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ALL_AT_ONCE,
+			onTouchesEnded : this.onTouchesEnded.bind ( this )
+		}, this );		    
+	},
+
+	onTouchesEnded:function ( touches, event )
+	{
+		for ( var idx in touches )
+		{
+			var		touch = touches [ idx ];
+			var 	location = touch.getLocation ( );
+
+			this.addGrossiniAtPosition ( location );
+		}
 	},
 });
+
+// Physics Demos
+var arrayOfPhysicsTest = 
+[
+ 	PhysicsDemoLogoSmash,
+ 	PhysicsDemoPyramidStack,	
+ 	PhysicsDemoClickAdd,
+];
+
+var nextPhysicsTest = function ( )
+{
+	physicsTestSceneIdx++;
+	physicsTestSceneIdx = physicsTestSceneIdx % arrayOfPhysicsTest.length;
+
+	return new arrayOfPhysicsTest [ physicsTestSceneIdx ] ( );
+};
+
+var previousPhysicsTest = function ( )
+{
+	physicsTestSceneIdx--;
+	if ( physicsTestSceneIdx < 0 )
+		physicsTestSceneIdx += arrayOfPhysicsTest.length;
+
+	return new arrayOfPhysicsTest [ physicsTestSceneIdx ] ( );
+};
+
+var restartPhysicsTest = function ( )
+{
+	return new arrayOfPhysicsTest [ physicsTestSceneIdx ] ( );
+};
