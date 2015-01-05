@@ -519,7 +519,7 @@ PhysicsDemoClickAdd = PhysicsBaseLayer.extend
 		this._super ( );
 
 		var 	node = new cc.Node ( );
-		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( cc.size ( VisibleRect.getVisibleRect ( ).width, VisibleRect.getVisibleRect ( ).height ) ) );
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		node.setPosition ( VisibleRect.center ( ) );
 //		this.addChild ( node );
 		this.addChildEx ( node );
@@ -979,7 +979,7 @@ PhysicsDemoActions = PhysicsBaseLayer.extend
 		}, this );	
 
 		var 	node = new cc.Node ( );
-		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( cc.size ( VisibleRect.getVisibleRect ( ).width, VisibleRect.getVisibleRect ( ).height ) ) );
+		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		node.setPosition ( VisibleRect.center ( ) );
 //		this.addChildEx ( node );
 		this.addChild ( node );
@@ -1231,7 +1231,7 @@ PhysicsDemoOneWayPlatform = PhysicsBaseLayer.extend
 		this.addChildEx ( ball );
 
 		/*
-		var 	contactListener = EventListenerPhysicsContactWithBodies::create(platform->getPhysicsBody(), ball->getPhysicsBody() );
+		var 	contactListener = EventListenerPhysicsContactWithBodies::create(platform.getPhysicsBody(), ball.getPhysicsBody() );
 		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsDemoOneWayPlatform::onContactBegin, this);
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 		*/
@@ -1371,19 +1371,18 @@ PhysicsDemoBug3988 = PhysicsBaseLayer.extend
 	{
 		this._super ( ); 
 		
-		/*
 		this.onToggleDebug ( );
-		this._scene.getPhysicsWorld ( ).setGravity(Vect::ZERO);
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
 
 		var 	ball  = new cc.Sprite ( "res/Images/YellowSquare.png" );
-		ball.setPosition ( VisibleRect.center ( ) - cp.v ( 100, 0 ) );
-		ball->setRotation(30.0 );
+		ball.setPosition ( cp.v.sub ( VisibleRect.center ( ), cp.v ( 100, 0 ) ) );
+		ball.setRotation ( 30.0 );
 		this.addChild ( ball );
 
-		var 	physicsBall = this.makeBox ( VisibleRect.center ( ) + cp.v ( 100, 0 ), cc.size ( 100, 100 ) );
-		physicsBall->setRotation(30.0 );
-		this.addChild ( physicsBall);
-		*/
+		var 	physicsBall = this.makeBox ( cp.v.add ( VisibleRect.center ( ), cp.v ( 100, 0 ) ), cc.size ( 100, 100 ) );
+		physicsBall.setRotation ( 30.0 );
+//		this.addChild ( physicsBall );		
+		this.addChildEx ( physicsBall );		
 	}
 });
 
@@ -1403,8 +1402,8 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		this._super ( ); 
 		
 		/*
-		this._scene.getPhysicsWorld ( ).setGravity(Vect::ZERO);
-		var 	s = VisibleRect::getVisibleRect().size;
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+		var 	s = VisibleRect.size ( );
 
 		_yellowBoxNum = 50;
 		_blueBoxNum = 50;
@@ -1414,11 +1413,11 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 
 		MenuItemFont::setFontcc.size ( 65);
 		var 	decrease1 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease1->setColor(Color3B(0,200,20 ) );
+		decrease1.setColor(Color3B(0,200,20 ) );
 		var 	increase1 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase1->setColor(Color3B(0,200,20 ) );
-		decrease1->setTag(1);
-		increase1->setTag(1);
+		increase1.setColor(Color3B(0,200,20 ) );
+		decrease1.setTag(1);
+		increase1.setTag(1);
 
 		var 	menu1 = Menu::create(decrease1, increase1, nullptr);
 		menu1->alignItemsHorizontally();
@@ -1430,11 +1429,11 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		label.setPosition ( cp.v ( s.width/2 - 150, s.height-50 ) );
 
 		var 	decrease2 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease2->setColor(Color3B(0,200,20 ) );
+		decrease2.setColor(Color3B(0,200,20 ) );
 		var 	increase2 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase2->setColor(Color3B(0,200,20 ) );
-		decrease2->setTag(2);
-		increase2->setTag(2);
+		increase2.setColor(Color3B(0,200,20 ) );
+		decrease2.setTag(2);
+		increase2.setTag(2);
 
 		var 	menu2 = Menu::create(decrease2, increase2, nullptr);
 		menu2->alignItemsHorizontally();
@@ -1446,11 +1445,11 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		label.setPosition ( cp.v ( s.width/2 - 150, s.height-90 ) );
 
 		var 	decrease3 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease3->setColor(Color3B(0,200,20 ) );
+		decrease3.setColor(Color3B(0,200,20 ) );
 		var 	increase3 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase3->setColor(Color3B(0,200,20 ) );
-		decrease3->setTag(3);
-		increase3->setTag(3);
+		increase3.setColor(Color3B(0,200,20 ) );
+		decrease3.setTag(3);
+		increase3.setTag(3);
 
 		var 	menu3 = Menu::create(decrease3, increase3, nullptr);
 		menu3->alignItemsHorizontally();
@@ -1462,11 +1461,11 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		label.setPosition ( cp.v ( s.width/2 - 150, s.height-130 ) );
 
 		var 	decrease4 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease4->setColor(Color3B(0,200,20 ) );
+		decrease4.setColor(Color3B(0,200,20 ) );
 		var 	increase4 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase4->setColor(Color3B(0,200,20 ) );
-		decrease4->setTag(4);
-		increase4->setTag(4);
+		increase4.setColor(Color3B(0,200,20 ) );
+		decrease4.setTag(4);
+		increase4.setTag(4);
 
 		var 	menu4 = Menu::create(decrease4, increase4, nullptr);
 		menu4->alignItemsHorizontally();
@@ -1484,7 +1483,7 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 	/*
 	void PhysicsContactTest::onDecrease(Ref* sender)
 	{
-		switch (dynamic_cast<Node*>(sender)->getTag())
+		switch (dynamic_cast<Node*>(sender).getTag())
 		{
 		case 1:
 			if(_yellowBoxNum > 0) _yellowBoxNum -= 50;
@@ -1508,7 +1507,7 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 
 	void PhysicsContactTest::onIncrease(Ref* sender)
 	{
-		switch (dynamic_cast<Node*>(sender)->getTag())
+		switch (dynamic_cast<Node*>(sender).getTag())
 		{
 		case 1:
 			_yellowBoxNum += 50;
@@ -1534,10 +1533,10 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 	{
 		removeChildByTag(10 );
 		var 	root = new cc.Node ( );
-		root->setTag(10 );
+		root.setTag(10 );
 		this.addChild ( root);
 
-		var 	s = VisibleRect::getVisibleRect().size;
+		var 	s = VisibleRect.size ( );
 		std::string strNum;
 		char buffer[10];
 
@@ -1562,7 +1561,7 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		label.setPosition ( cp.v ( s.width/2, s.height-170 ) );
 
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1, 0.0f)) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), PhysicsMaterial(0.1, 1, 0.0 )) );
 		wall.setPosition ( VisibleRect.center ( ) );
 		root->addChild(wall);
 
@@ -1574,13 +1573,13 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		for (int i = 0; i < _yellowBoxNum; ++i)
 		{
 			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect::getVisibleRect().size;
+			Size winSize = VisibleRect.size ( );
 			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
 			position.x = position.x * CCRANDOM_0_1();
 			position.y = position.y * CCRANDOM_0_1();
 			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
 			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
-			var 	box = makeBox(position, size, 1, PhysicsMaterial(0.1, 1, 0.0f) );
+			var 	box = makeBox(position, size, 1, PhysicsMaterial(0.1, 1, 0.0 ) );
 			box.getPhysicsBody ( ).setVelocity ( velocity);
 			box.getPhysicsBody ( ).setCategoryBitmask(0x01);    // 0001
 			box.getPhysicsBody ( ).setContactTestBitmask(0x04); // 0100
@@ -1592,13 +1591,13 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		for (int i = 0; i < _blueBoxNum; ++i)
 		{
 			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect::getVisibleRect().size;
+			Size winSize = VisibleRect.size ( );
 			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
 			position.x = position.x * CCRANDOM_0_1();
 			position.y = position.y * CCRANDOM_0_1();
 			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
 			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
-			var 	box = makeBox(position, size, 2, PhysicsMaterial(0.1, 1, 0.0f) );
+			var 	box = makeBox(position, size, 2, PhysicsMaterial(0.1, 1, 0.0 ) );
 			box.getPhysicsBody ( ).setVelocity ( velocity);
 			box.getPhysicsBody ( ).setCategoryBitmask(0x02);    // 0010
 			box.getPhysicsBody ( ).setContactTestBitmask(0x08); // 1000
@@ -1610,13 +1609,13 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		for (int i = 0; i < _yellowTriangleNum; ++i)
 		{
 			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect::getVisibleRect().size;
+			Size winSize = VisibleRect.size ( );
 			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
 			position.x = position.x * CCRANDOM_0_1();
 			position.y = position.y * CCRANDOM_0_1();
 			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
 			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
-			var 	triangle = makeTriangle(position, size, 1, PhysicsMaterial(0.1, 1, 0.0f) );
+			var 	triangle = makeTriangle(position, size, 1, PhysicsMaterial(0.1, 1, 0.0 ) );
 			triangle.getPhysicsBody ( ).setVelocity ( velocity);
 			triangle.getPhysicsBody ( ).setCategoryBitmask(0x04);    // 0100
 			triangle.getPhysicsBody ( ).setContactTestBitmask(0x01); // 0001
@@ -1628,13 +1627,13 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		for (int i = 0; i < _blueTriangleNum; ++i)
 		{
 			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect::getVisibleRect().size;
+			Size winSize = VisibleRect.size ( );
 			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
 			position.x = position.x * CCRANDOM_0_1();
 			position.y = position.y * CCRANDOM_0_1();
 			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
 			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
-			var 	triangle = makeTriangle(position, size, 2, PhysicsMaterial(0.1, 1, 0.0f) );
+			var 	triangle = makeTriangle(position, size, 2, PhysicsMaterial(0.1, 1, 0.0 ) );
 			triangle.getPhysicsBody ( ).setVelocity ( velocity);
 			triangle.getPhysicsBody ( ).setCategoryBitmask(0x08);    // 1000
 			triangle.getPhysicsBody ( ).setContactTestBitmask(0x02); // 0010
@@ -1645,11 +1644,11 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 
 	bool PhysicsContactTest::onContactBegin(PhysicsContact& contact)
 	{
-		PhysicsBody* a = contact.getShapeA()->getBody();
-		PhysicsBody* b = contact.getShapeB()->getBody();
-		PhysicsBody* body = (a->getCategoryBitmask() == 0x04 || a->getCategoryBitmask() == 0x08) ? a : b;
+		PhysicsBody* a = contact.getShapeA().getBody();
+		PhysicsBody* b = contact.getShapeB().getBody();
+		PhysicsBody* body = (a.getCategoryBitmask() == 0x04 || a.getCategoryBitmask() == 0x08) ? a : b;
 		CC_UNUSED_PARAM(body);
-		CC_ASSERT(body->getCategoryBitmask() == 0x04 || body->getCategoryBitmask() == 0x08);
+		CC_ASSERT(body.getCategoryBitmask() == 0x04 || body.getCategoryBitmask() == 0x08);
 
 		return true;
 	}
@@ -1671,54 +1670,60 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 	{
 		this._super ( ); 
 		
-		/*
 		this.onToggleDebug ( );
 		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
 
-		var 	touchListener = EventListenerTouchOneByOne::create();
-		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsDemo::onTouchBegan, this);
-		touchListener->onTouchMoved = CC_CALLBACK_2(PhysicsDemo::onTouchMoved, this);
-		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemo::onTouchEnded, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );
 
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-		addChild(wall);
+//		this.addChild ( wall );
+		this.addChildEx ( wall );
 
 		// anchor test
 		var 	anchorNode = new cc.Sprite ( "res/Images/YellowSquare.png" );
-		anchorNode->setAnchorPoint(cp.v ( 0.1, 0.9f) );
+		anchorNode.setAnchorPoint ( cp.v ( 0.1, 0.9 ) );
 		anchorNode.setPosition ( 100, 100 );
-		anchorNode->setScale(0.25);
-		addChild(anchorNode);
-		anchorNode.setPhysicsBody ( cc.PhysicsBody.createBox ( anchorNode->getContentSize ( )*anchorNode->getScale()) );
+		anchorNode.setScale ( 0.25 );
+//		this.addChild ( anchorNode );
+		this.addChildEx ( anchorNode );
+		anchorNode.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( anchorNode.getContentSize ( ).width * anchorNode.getScale ( ), anchorNode.getContentSize ( ).height * anchorNode.getScale ( ) ) ) );
 		anchorNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-
-		//parent test
+		
+		// parent test
 		var 	parent = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		parent.setPosition ( 200, 100 );
-		parent->setScale(0.25);
-		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( parent->getContentSize ( )*anchorNode->getScale()) );
+		parent.setScale ( 0.25 );
+		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( parent.getContentSize ( ).width * anchorNode.getScale ( ), parent.getContentSize ( ).height * anchorNode.getScale ( ) ) ) );
 		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		addChild(parent);
-
+//		this.addChild ( parent );
+		this.addChildEx ( parent );		
+		
 		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
 		leftBall.setPosition ( -30, 0 );
-		leftBall->cocos2d::Node::setScale(2);
-		leftBall.setPhysicsBody ( PhysicsBody::createCircle(leftBall->getContentSize ( ).width) );
+		leftBall.setScale ( 2 );																			// ?
+		leftBall.setPhysicsBody ( cc.PhysicsBody.createCircle ( leftBall.getContentSize ( ).width / 4 ) );	// ?
 		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		parent->addChild(leftBall);
-
+//		parent.addChild ( leftBall );
+		parent.addChildEx ( leftBall );
+		
 		// offset position rotation test
 		var 	offsetPosNode = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		offsetPosNode.setPosition ( 100, 200 );
-		offsetPosNode.setPhysicsBody ( cc.PhysicsBody.createBox ( offsetPosNode->getContentSize ( )/2) );
-		offsetPosNode.getPhysicsBody ( ).setPositionOffset(-cp.v ( offsetPosNode->getContentSize ( )/2) );
-		offsetPosNode.getPhysicsBody ( ).setRotationOffset(45);
+		offsetPosNode.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( offsetPosNode.getContentSize ( ).width / 2, offsetPosNode.getContentSize ( ).height / 2 ) ) );
+		offsetPosNode.getPhysicsBody ( ).setPositionOffset ( cp.v ( -offsetPosNode.getContentSize ( ).width / 2, -offsetPosNode.getContentSize ( ).height / 2 ) );
+		offsetPosNode.getPhysicsBody ( ).setRotationOffset ( 45 );
 		offsetPosNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		addChild(offsetPosNode);
-		*/
+//		this.addChild ( offsetPosNode );
+		this.addChildEx ( offsetPosNode );		
 	}
 });
 
@@ -1736,49 +1741,54 @@ PhysicsSetGravityEnableTest = PhysicsBaseLayer.extend
 	onEnter:function ( ) 
 	{
 		this._super ( ); 
-		/*
-		var 	touchListener = EventListenerTouchOneByOne::create();
-		touchListener->onTouchBegan = CC_CALLBACK_2(PhysicsDemo::onTouchBegan, this);
-		touchListener->onTouchMoved = CC_CALLBACK_2(PhysicsDemo::onTouchMoved, this);
-		touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemo::onTouchEnded, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+		
+		cc.eventManager.addListener 
+		({
+			event : cc.EventListener.TOUCH_ONE_BY_ONE,
+			swallowTouches : true,
+			onTouchBegan : this.onTouchBegan.bind ( this ),
+			onTouchMoved : this.onTouchMoved.bind ( this ),
+			onTouchEnded : this.onTouchEnded.bind ( this )
+		}, this );
 
 		// wall
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-		addChild(wall);
-
+//		this.addChild ( wall );
+		this.addChildEx ( wall );
+		
 		// common box
-		var 	commonBox = makeBox(cp.v ( 100, 100 ), cc.size ( 50, 50 ), 1);
+		var 	commonBox = this.makeBox ( cp.v ( 100, 100 ), cc.size ( 50, 50 ), 1 );
 		commonBox.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		addChild(commonBox);
-
-		var 	box = makeBox(cp.v ( 200, 100 ), cc.size ( 50, 50 ), 2);
-		box.getPhysicsBody ( ).setMass(20 );
+//		this.addChild ( commonBox );
+		this.addChildEx ( commonBox );
+		
+		var 	box = this.makeBox ( cp.v ( 200, 100 ), cc.size ( 50, 50 ), 2 );
+		box.getPhysicsBody ( ).setMass ( 20 );
 		box.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		box.getPhysicsBody ( ).setGravityEnable ( false );
-		addChild(box);
-
+//		this.addChild ( box );
+		this.addChildEx ( box );
+		
 		var 	ball = this.makeBall ( cp.v ( 200, 200 ), 50 );
-		ball->setTag(2);
+		ball.setTag ( 2 );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setGravityEnable ( false );
-		addChild(ball );
-		ball.getPhysicsBody ( ).setMass(50 );
-		scheduleOnce(CC_SCHEDULE_SELECTOR(PhysicsSetGravityEnableTest::onScheduleOnce), 1.0 );
-		*/
+//		this.addChild ( ball );
+		this.addChildEx ( ball );
+		ball.getPhysicsBody ( ).setMass ( 50 );
+		
+		this.scheduleOnce ( this.onScheduleOnce, 1.0 );		
 	},
 	
-	/*
-	void PhysicsSetGravityEnableTest::onScheduleOnce(float delta)
+	onScheduleOnce:function ( delta )
 	{
-		var 	ball = getChildByTag(2);
-		ball.getPhysicsBody ( ).setMass(200 );
+		var 	ball = this.getChildByTag ( 2 );
+		ball.getPhysicsBody ( ).setMass ( 200 );
 
-		this._scene.getPhysicsWorld ( ).setGravity(cp.v ( 0, 98) );
+		this._scene.getPhysicsWorld ( ).setGravity ( cp.v ( 0, 98 ) );
 	}
-	*/
 });
 
 /////////////////////////////////////////////
@@ -1809,7 +1819,7 @@ Bug5482 = PhysicsBaseLayer.extend
 
 		// wall
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		wall.setPosition ( VisibleRect.center ( ) );
 		addChild(wall);
 
@@ -1828,8 +1838,8 @@ Bug5482 = PhysicsBaseLayer.extend
 		_nodeB.setPosition ( VisibleRect.center ( ).x + 150, 100 );
 		this.addChild ( _nodeB);
 
-		_body = cc.PhysicsBody.createBox ( _nodeA->getContentSize ( ) );
-		_body->setTag ( DRAG_BODYS_TAG );
+		_body = cc.PhysicsBody.createBox ( _nodeA.getContentSize ( ) );
+		_body.setTag ( DRAG_BODYS_TAG );
 		_body->retain();
 		*/
 	}
@@ -1856,7 +1866,7 @@ PhysicsFixedUpdate = PhysicsBaseLayer.extend
 
 		// wall
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1, 0.0f)) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), PhysicsMaterial(0.1, 1, 0.0 )) );
 		wall.setPosition ( VisibleRect.center ( ) );
 		this.addChild ( wall);
 
@@ -1871,7 +1881,7 @@ PhysicsFixedUpdate = PhysicsBaseLayer.extend
 	{
 		var 	ball = new cc.Sprite ( "res/Images/ball.png" );
 		ball.setPosition ( 100, 100 );
-		ball.setPhysicsBody ( PhysicsBody::createCircle(ball->getContentSize ( ).width/2, PhysicsMaterial(0.1, 1, 0.0f)) );
+		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( ball.getContentSize ( ).width/2, PhysicsMaterial(0.1, 1, 0.0 )) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setVelocity ( Point(1000, 20 ) );
 		this.addChild ( ball );
@@ -1920,23 +1930,23 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( PhysicsBody::createEdgeBox(VisibleRect::getVisibleRect().size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		wall.setPosition ( VisibleRect.center ( ) );
 		addChild(wall);
 
 		//parent test
 		var 	parent = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		parent.setPosition ( 200, 100 );
-		parent->setScale(0.25);
-		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( parent->getContentSize ( )*parent->getScale(), PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		parent.setScale(0.25);
+		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( parent.getContentSize ( )*parent.getScale(), PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-		parent->setTag(1);
+		parent.setTag(1);
 		addChild(parent);
 
 		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
 		leftBall.setPosition ( -30, 0 );
 		leftBall->cocos2d::Node::setScale(2);
-		leftBall.setPhysicsBody ( PhysicsBody::createCircle(leftBall->getContentSize ( ).width, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		leftBall.setPhysicsBody ( cc.PhysicsBody.createCircle ( leftBall.getContentSize ( ).width, PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		parent->addChild(leftBall);
 
@@ -1946,17 +1956,17 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 
 		var 	normal = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		normal.setPosition ( 300, 100 );
-		normal->setScale(0.25, 0.5);
-		var 	size = parent->getContentSize ( );
-		size.width *= normal->getScaleX();
-		size.height *= normal->getScaleY();
-		normal.setPhysicsBody ( cc.PhysicsBody.createBox ( size, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		normal.setScale(0.25, 0.5);
+		var 	size = parent.getContentSize ( );
+		size.width *= normal.getScaleX();
+		size.height *= normal.getScaleY();
+		normal.setPhysicsBody ( cc.PhysicsBody.createBox ( size, PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		normal.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		addChild(normal);
 
 		var 	bullet = new cc.Sprite ( "res/Images/ball.png" );
 		bullet.setPosition ( 200, 200 );
-		bullet.setPhysicsBody ( PhysicsBody::createCircle(bullet->getContentSize ( ).width/2, PhysicsMaterial(0.1, 1.0, 0.0f)) );
+		bullet.setPhysicsBody ( cc.PhysicsBody.createCircle ( bullet.getContentSize ( ).width/2, PhysicsMaterial(0.1, 1.0, 0.0 )) );
 		bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 100, 100 ) );
 		this.addChild ( bullet);
 
@@ -1977,7 +1987,7 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 	/*
 	bool PhysicsTransformTest::onTouchBegan(Touch *touch, Event *event)
 	{
-		Node* child = this->getChildByTag(1);
+		Node* child = this.getChildByTag(1);
 		child.setPosition ( this->convertTouchToNodeSpace(touch) );
 		return false;
 	}
@@ -1996,10 +2006,10 @@ var arrayOfPhysicsTest =
  	PhysicsDemoPump,
  	PhysicsDemoOneWayPlatform,
  	PhysicsDemoSlice,
-// 	PhysicsDemoBug3988,
+ 	PhysicsDemoBug3988,
 // 	PhysicsContactTest,
-// 	PhysicsPositionRotationTest,
-// 	PhysicsSetGravityEnableTest,
+ 	PhysicsPositionRotationTest,
+ 	PhysicsSetGravityEnableTest,
 // 	Bug5482,
 // 	PhysicsFixedUpdate,
 // 	PhysicsTransformTest
