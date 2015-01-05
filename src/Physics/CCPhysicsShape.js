@@ -164,7 +164,7 @@ cc.PhysicsShape = cc.Class.extend
 	{
 		return this._material.restitution; 
 	},
-	
+
 	setRestitution:function ( restitution )
 	{
 		this._material.restitution = restitution;
@@ -230,9 +230,8 @@ cc.PhysicsShape = cc.Class.extend
 		for ( var idx in shapes )
 		{
 			var		shape = shapes [ idx ];
-			var		result = shape.pointQuery ( point );
-			if ( !( result === undefined ) )
-			{
+			if ( shape.pointQuery ( point ) )
+			{				
 				return true;
 			}			
 		}
@@ -611,7 +610,7 @@ cc.PhysicsShapePolygon = cc.PhysicsShape.extend
 		if ( offset   === undefined )	offset   = cp.vzero;
 
 		cc.PhysicsShape.prototype.init.call ( this, cc.PhysicsShape.Type.POLYGEN );
-				
+
 		var		verts = null;
 		if ( (typeof points [ 0 ]) == "object" )
 		{
@@ -651,23 +650,23 @@ cc.PhysicsShapePolygon = cc.PhysicsShape.extend
 
 	getPoint:function ( i ) 
 	{
-		var		shape = this._info.getShapes ( ) [ 0 ];			
-		return shape.verts [ i ];
+		var		shape = this._info.getShapes ( ) [ 0 ];		
+		return cp.v ( shape.verts [ i * 2 ], shape.verts [ i * 2 + 1 ] );
 	},
 	
 	getPoints:function ( outPoints ) 
 	{
 		var		shape = this._info.getShapes ( ) [ 0 ];			
-		for ( var i in shape.verts )
+		for ( var i = 0; i < shape.verts.length / 2; i++ )
 		{
-			outPoints [ i ] = shape.verts [ i ];
+			outPoints [ i ] = cp.v ( shape.verts [ i * 2 ], shape.verts [ i * 2 + 1 ] );
 		}
 	},
 	
 	getPointsCount:function ( ) 
 	{
 		var		shape = this._info.getShapes ( ) [ 0 ];	
-		return shape.verts.length;
+		return shape.verts.length / 2;
 	},
 	
 	getCenter:function ( ) 
