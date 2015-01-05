@@ -37,6 +37,12 @@ var VisibleRect =
 		VisibleRect.lazyInit ( );
 		return s_visibleRect;
 	},
+	
+	size:function ( )
+	{
+		VisibleRect.lazyInit ( );
+		return cc.size ( s_visibleRect.width, s_visibleRect.height );
+	},
 
 	left:function ( )
 	{
