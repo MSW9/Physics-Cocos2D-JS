@@ -1262,6 +1262,7 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 		this.onToggleDebug ( );
 
 		this._sliceTag = 1;
+		this._startPos = null;
 
 		cc.eventManager.addListener 
 		({
@@ -1269,8 +1270,9 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 			swallowTouches : true,
 			onTouchBegan : function ( touch, event )
 			{
+				this._startPos = touch.getLocation ( );
 				return true;
-			},
+			}.bind ( this ),
 			onTouchEnded : this.onTouchEnded.bind ( this )
 		}, this );	
 
@@ -1353,7 +1355,8 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 
 	onTouchEnded:function ( touch, event )
 	{
-		this._scene.getPhysicsWorld ( ).rayCast ( this.slice.bind ( this ), touch.getStartLocation ( ), touch.getLocation ( ), null );
+//		this._scene.getPhysicsWorld ( ).rayCast ( this.slice.bind ( this ), touch.getStartLocation ( ), touch.getLocation ( ), null );
+		this._scene.getPhysicsWorld ( ).rayCast ( this.slice.bind ( this ), this._startPos, touch.getLocation ( ), null );
 	}
 });
 
@@ -1507,10 +1510,10 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 
 	resetTest:function ( )
 	{
-		this.removeChildByTag ( 10 );
+		this.removeChildByTag ( 100 );
 		
 		var 	root = new cc.Node ( );
-		root.setTag ( 10 );
+		root.setTag ( 100 );
 		this.addChild ( root );
 
 		var 	s = VisibleRect.size ( );
@@ -1944,10 +1947,10 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 //		parent.addChild ( leftBall );
 		parent.addChildEx ( leftBall );
 
-		var 	scaleTo = cc.ScaleTo ( 2.0, 0.5 );
-		var 	scaleBack = cc.ScaleTo ( 2.0, 1.0 );
+		var 	scaleTo = cc.scaleTo ( 2.0, 0.5 );
+		var 	scaleBack = cc.scaleTo ( 2.0, 1.0 );
 		parent.runAction ( cc.sequence ( scaleTo, scaleBack ).repeatForever ( ) ); 
-		
+
 		var 	normal = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		normal.setPosition ( 300, 100 );
 		normal.setScale ( 0.25, 0.5 );
@@ -1966,12 +1969,12 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 //		this.addChild ( bullet );
 		this.addChildEx ( bullet );
 	
-		var 	move 	= cc.MoveBy ( 2.0, cp.v (  100,  100 ) );
-		var 	move2 	= cc.MoveBy ( 2.0, cp.v ( -200,    0 ) );
-		var	 	move3 	= cc.MoveBy ( 2.0, cp.v (  100, -100 ) );
-		var 	scale 	= cc.ScaleTo ( 3.0, 0.3 );
-		var 	scale2 	= cc.ScaleTo ( 3.0, 1.0 );
-		var 	rotate  = cc.RotateBy ( 6.0, 360 );
+		var 	move 	= cc.moveBy ( 2.0, cp.v (  100,  100 ) );
+		var 	move2 	= cc.moveBy ( 2.0, cp.v ( -200,    0 ) );
+		var	 	move3 	= cc.moveBy ( 2.0, cp.v (  100, -100 ) );
+		var 	scale 	= cc.scaleTo ( 3.0, 0.3 );
+		var 	scale2 	= cc.scaleTo ( 3.0, 1.0 );
+		var 	rotate  = cc.rotateBy ( 6.0, 360 );
 		
 		this.runAction ( cc.sequence ( move, move2, move3 ).repeatForever ( ) );
 		this.runAction ( cc.sequence ( scale, scale ).repeatForever ( ) );
@@ -1989,7 +1992,6 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 // Physics Demos
 var arrayOfPhysicsTest = 
 [
-	PhysicsContactTest,
  	PhysicsDemoLogoSmash,
  	PhysicsDemoPyramidStack,	
  	PhysicsDemoClickAdd,
