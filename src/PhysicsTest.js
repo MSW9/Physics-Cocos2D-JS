@@ -1402,259 +1402,236 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 	{
 		this._super ( ); 
 		
-		/*
 		this._scene.getPhysicsWorld ( ).setGravity ( cp.vzero );
+		
 		var 	s = VisibleRect.size ( );
 
-		_yellowBoxNum = 50;
-		_blueBoxNum = 50;
-		_yellowTriangleNum = 50;
-		_blueTriangleNum = 50;
+		this._yellowBoxNum 		= 50;
+		this._blueBoxNum 		= 50;
+		this._yellowTriangleNum = 50;
+		this._blueTriangleNum 	= 50;
 
+		cc.MenuItemFont.setFontSize ( 65 );
+		var 	decrease1 = new cc.MenuItemFont ( " - ", this.onDecrease, this );
+		decrease1.setColor ( cc.color ( 0, 200, 20 ) );
+		var 	increase1 = new cc.MenuItemFont ( " + ", this.onIncrease, this );
+		increase1.setColor ( cc.color ( 0, 200, 20 ) );
+		decrease1.setTag ( 1 );
+		increase1.setTag ( 1 );
 
-		MenuItemFont::setFontcc.size ( 65);
-		var 	decrease1 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease1.setColor(Color3B(0,200,20 ) );
-		var 	increase1 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase1.setColor(Color3B(0,200,20 ) );
-		decrease1.setTag(1);
-		increase1.setTag(1);
+		var 	menu1 = new cc.Menu ( decrease1, increase1 );
+		menu1.alignItemsHorizontally ( );
+		menu1.setPosition ( cp.v ( s.width / 2, s.height - 50 ) );
+		this.addChild ( menu1, 1 );
 
-		var 	menu1 = Menu::create(decrease1, increase1, nullptr);
-		menu1->alignItemsHorizontally();
-		menu1.setPosition ( cp.v ( s.width/2, s.height-50 ) );
-		addChild(menu1, 1);
+		var 	label = new cc.LabelTTF ( "yellow box", "Arial", 24 );
+		this.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2 - 150, s.height - 50 ) );
 
-		var 	label = Label::createWithTTF("yellow box", "fonts/arial.ttf", 32);
-		addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2 - 150, s.height-50 ) );
+		var 	decrease2 = new cc.MenuItemFont ( " - ", this.onDecrease, this );
+		decrease2.setColor ( cc.color ( 0, 200, 20 ) );
+		var 	increase2 = new cc.MenuItemFont ( " + ", this.onIncrease, this );
+		increase2.setColor ( cc.color ( 0, 200, 20 ) );
+		decrease2.setTag ( 2 );
+		increase2.setTag ( 2 );
+		
+		var 	menu2 = new cc.Menu ( decrease2, increase2 );
+		menu2.alignItemsHorizontally ( );
+		menu2.setPosition ( cp.v ( s.width / 2, s.height - 90 ) );
+		this.addChild ( menu2, 1 );
 
-		var 	decrease2 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease2.setColor(Color3B(0,200,20 ) );
-		var 	increase2 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase2.setColor(Color3B(0,200,20 ) );
-		decrease2.setTag(2);
-		increase2.setTag(2);
+		label = new cc.LabelTTF ( "blue box", "Arial", 24 );
+		this.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2 - 150, s.height - 90 ) );
 
-		var 	menu2 = Menu::create(decrease2, increase2, nullptr);
-		menu2->alignItemsHorizontally();
-		menu2.setPosition ( cp.v ( s.width/2, s.height-90 ) );
-		addChild(menu2, 1);
+		var 	decrease3 = new cc.MenuItemFont ( " - ", this.onDecrease, this );
+		decrease3.setColor ( cc.color ( 0, 200, 20 ) );
+		var 	increase3 = new cc.MenuItemFont ( " + ", this.onIncrease, this );
+		increase3.setColor ( cc.color ( 0, 200, 20 ) );
+		decrease3.setTag ( 3 );
+		increase3.setTag ( 3 );
 
-		label = Label::createWithTTF("blue box", "fonts/arial.ttf", 32);
-		addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2 - 150, s.height-90 ) );
+		var 	menu3 = new cc.Menu ( decrease3, increase3 );
+		menu3.alignItemsHorizontally ( );
+		menu3.setPosition ( cp.v ( s.width / 2, s.height - 130 ) );
+		this.addChild ( menu3, 1 );
 
-		var 	decrease3 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease3.setColor(Color3B(0,200,20 ) );
-		var 	increase3 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase3.setColor(Color3B(0,200,20 ) );
-		decrease3.setTag(3);
-		increase3.setTag(3);
+		label = new cc.LabelTTF ( "yellow triangle", "Arial", 24 );
+		this.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2 - 150, s.height - 130 ) );
 
-		var 	menu3 = Menu::create(decrease3, increase3, nullptr);
-		menu3->alignItemsHorizontally();
-		menu3.setPosition ( cp.v ( s.width/2, s.height-130 ) );
-		addChild(menu3, 1);
+		var 	decrease4 = new cc.MenuItemFont ( " - ", this.onDecrease, this );
+		decrease4.setColor ( cc.color ( 0, 200, 20 ) );
+		var 	increase4 = new cc.MenuItemFont ( " + ", this.onIncrease, this );
+		increase4.setColor ( cc.color ( 0, 200, 20 ) );
+		decrease4.setTag ( 4 );
+		increase4.setTag ( 4 );
 
-		label = Label::createWithTTF("yellow triangle", "fonts/arial.ttf", 32);
-		addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2 - 150, s.height-130 ) );
+		var 	menu4 = new cc.Menu ( decrease4, increase4 );
+		menu4.alignItemsHorizontally ( );
+		menu4.setPosition ( cp.v ( s.width / 2, s.height - 170 ) );
+		this.addChild ( menu4, 1 );
 
-		var 	decrease4 = MenuItemFont::create(" - ", CC_CALLBACK_1(PhysicsContactTest::onDecrease, this) );
-		decrease4.setColor(Color3B(0,200,20 ) );
-		var 	increase4 = MenuItemFont::create(" + ", CC_CALLBACK_1(PhysicsContactTest::onIncrease, this) );
-		increase4.setColor(Color3B(0,200,20 ) );
-		decrease4.setTag(4);
-		increase4.setTag(4);
-
-		var 	menu4 = Menu::create(decrease4, increase4, nullptr);
-		menu4->alignItemsHorizontally();
-		menu4.setPosition ( cp.v ( s.width/2, s.height-170 ) );
-		addChild(menu4, 1);
-
-		label = Label::createWithTTF("blue triangle", "fonts/arial.ttf", 32);
-		addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2 - 150, s.height-170 ) );
-
-		resetTest();
-
-		*/
-	}
-	/*
-	void PhysicsContactTest::onDecrease(Ref* sender)
+		label = new cc.LabelTTF ( "blue triangle", "Arial", 24 );
+		this.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2 - 150, s.height - 170 ) );
+		
+		this.resetTest ( );
+	},
+	
+	onDecrease:function ( sender )
 	{
-		switch (dynamic_cast<Node*>(sender).getTag())
+		switch ( sender.getTag ( ) )
 		{
-		case 1:
-			if(_yellowBoxNum > 0) _yellowBoxNum -= 50;
-			break;
-		case 2:
-			if(_blueBoxNum > 0) _blueBoxNum -= 50;
-			break;
-		case 3:
-			if(_yellowTriangleNum > 0) _yellowTriangleNum -= 50;
-			break;
-		case 4:
-			if(_blueTriangleNum > 0) _blueTriangleNum -= 50;
-			break;
-
-		default:
-			break;
+			case 1 :	if ( this._yellowBoxNum 	 > 0 )	this._yellowBoxNum 		-= 50;		break;
+			case 2 :	if ( this._blueBoxNum 		 > 0 )	this._blueBoxNum 		-= 50;		break;
+			case 3 :	if ( this._yellowTriangleNum > 0 )	this._yellowTriangleNum -= 50;		break;
+			case 4 :	if ( this._blueTriangleNum 	 > 0 )	this._blueTriangleNum 	-= 50;		break;
 		}
 
-		resetTest();
-	}
+		this.resetTest ( );
+	},
 
-	void PhysicsContactTest::onIncrease(Ref* sender)
+	onIncrease:function ( sender )
 	{
-		switch (dynamic_cast<Node*>(sender).getTag())
+		switch ( sender.getTag ( ) )
 		{
-		case 1:
-			_yellowBoxNum += 50;
-			break;
-		case 2:
-			_blueBoxNum += 50;
-			break;
-		case 3:
-			_yellowTriangleNum += 50;
-			break;
-		case 4:
-			_blueTriangleNum += 50;
-			break;
-
-		default:
-			break;
+			case 1 :	this._yellowBoxNum 		+= 50;		break;
+			case 2 :	this._blueBoxNum 		+= 50;		break;
+			case 3 :	this._yellowTriangleNum += 50;		break;
+			case 4 :	this._blueTriangleNum 	+= 50;		break;
 		}
 
-		resetTest();
-	}
+		this.resetTest ( );
+	},
 
-	void PhysicsContactTest::resetTest()
+	resetTest:function ( )
 	{
-		removeChildByTag(10 );
+		this.removeChildByTag ( 10 );
+		
 		var 	root = new cc.Node ( );
-		root.setTag(10 );
-		this.addChild ( root);
+		root.setTag ( 10 );
+		this.addChild ( root );
 
 		var 	s = VisibleRect.size ( );
-		std::string strNum;
-		char buffer[10];
 
-		sprintf(buffer, "%d", _yellowBoxNum);
-		var 	label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
-		root->addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2, s.height-50 ) );
+		var 	label = new cc.LabelTTF ( this._yellowBoxNum, "Arial", 24 );
+		root.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2, s.height - 50 ) );
 
-		sprintf(buffer, "%d", _blueBoxNum);
-		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
-		root->addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2, s.height-90 ) );
+		label = new cc.LabelTTF ( this._blueBoxNum, "Arial", 24 );
+		root.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2, s.height - 90 ) );
 
-		sprintf(buffer, "%d", _yellowTriangleNum);
-		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
-		root->addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2, s.height-130 ) );
+		label = new cc.LabelTTF ( this._yellowTriangleNum, "Arial", 24 );
+		root.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2, s.height - 130 ) );
 
-		sprintf(buffer, "%d", _blueTriangleNum);
-		label = Label::createWithTTF(buffer, "fonts/arial.ttf", 32);
-		root->addChild(label, 1);
-		label.setPosition ( cp.v ( s.width/2, s.height-170 ) );
+		label = new cc.LabelTTF ( this._blueTriangleNum, "Arial", 24 );
+		root.addChild ( label, 1 );
+		label.setPosition ( cp.v ( s.width / 2, s.height - 170 ) );
 
 		var 	wall = new cc.Node ( );
-		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), PhysicsMaterial(0.1, 1, 0.0 )) );
+		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-		root->addChild(wall);
-
-		var 	contactListener = EventListenerPhysicsContact::create();
-		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsContactTest::onContactBegin, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
-
+//		root.addChild ( wall );
+		root.addChildEx ( wall );
+		
+//		var 	contactListener = EventListenerPhysicsContact::create();
+//		contactListener->onContactBegin = this.onContactBegin, this);
+//		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+	
 		// yellow box, will collide with itself and blue box.
-		for (int i = 0; i < _yellowBoxNum; ++i)
+		for ( var i = 0; i < this._yellowBoxNum; ++i )
 		{
-			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect.size ( );
-			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
-			position.x = position.x * CCRANDOM_0_1();
-			position.y = position.y * CCRANDOM_0_1();
-			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
-			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
-			var 	box = makeBox(position, size, 1, PhysicsMaterial(0.1, 1, 0.0 ) );
+			var 	size = cc.size ( 10 + cc.random0To1 ( ) * 10, 10 + cc.random0To1 ( ) * 10 );
+			var 	winSize = VisibleRect.size ( );
+			var 	position = cp.v.sub ( cp.v ( winSize.width, winSize.height ), cp.v ( size.width, size.height ) );
+			position.x = position.x * cc.random0To1 ( );
+			position.y = position.y * cc.random0To1 ( );
+			position = cp.v.add ( cp.v.add ( VisibleRect.leftBottom ( ), position ), cp.v ( size.width / 2, size.height / 2 ) );
+			var 	velocity = cp.v ( ( cc.random0To1 ( ) - 0.5 ) * 200, ( cc.random0To1 ( ) - 0.5 ) * 200 );
+			var 	box = this.makeBox ( position, size, 1, cc.PhysicsMaterial ( 0.1, 1, 0.0 ) );
 			box.getPhysicsBody ( ).setVelocity ( velocity);
-			box.getPhysicsBody ( ).setCategoryBitmask(0x01);    // 0001
-			box.getPhysicsBody ( ).setContactTestBitmask(0x04); // 0100
-			box.getPhysicsBody ( ).setCollisionBitmask(0x03);   // 0011
-			root->addChild(box);
+			box.getPhysicsBody ( ).setCategoryBitmask ( 0x01 );    // 0001
+			box.getPhysicsBody ( ).setContactTestBitmask ( 0x04 ); // 0100
+			box.getPhysicsBody ( ).setCollisionBitmask ( 0x03 );   // 0011
+//			root.addChild ( box );
+			root.addChildEx ( box );
 		}
 
 		// blue box, will collide with blue box.
-		for (int i = 0; i < _blueBoxNum; ++i)
+		for ( var i = 0; i < this._blueBoxNum; ++i )
 		{
-			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect.size ( );
-			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
-			position.x = position.x * CCRANDOM_0_1();
-			position.y = position.y * CCRANDOM_0_1();
-			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
-			Vect velocity((CCRANDOM_0_1() - 0.5)*200, (CCRANDOM_0_1() - 0.5)*200 );
-			var 	box = makeBox(position, size, 2, PhysicsMaterial(0.1, 1, 0.0 ) );
+			var 	size = cc.size ( 10 + cc.random0To1 ( ) * 10, 10 + cc.random0To1 ( ) * 10 );
+			var 	winSize = VisibleRect.size ( );
+			var 	position = cp.v.sub ( cp.v ( winSize.width, winSize.height ), cp.v ( size.width, size.height ) );
+			position.x = position.x * cc.random0To1 ( );
+			position.y = position.y * cc.random0To1 ( );
+			position = cp.v.add ( cp.v.add ( VisibleRect.leftBottom ( ), position ), cp.v ( size.width / 2, size.height / 2 ) );
+			var 	velocity = cp.v ( ( cc.random0To1 ( ) - 0.5 ) * 200, ( cc.random0To1 ( ) - 0.5 ) * 200 );
+			var 	box = this.makeBox ( position, size, 2, cc.PhysicsMaterial ( 0.1, 1, 0.0 ) );
 			box.getPhysicsBody ( ).setVelocity ( velocity);
-			box.getPhysicsBody ( ).setCategoryBitmask(0x02);    // 0010
-			box.getPhysicsBody ( ).setContactTestBitmask(0x08); // 1000
-			box.getPhysicsBody ( ).setCollisionBitmask(0x01);   // 0001
-			root->addChild(box);
+			box.getPhysicsBody ( ).setCategoryBitmask ( 0x02 );    // 0010
+			box.getPhysicsBody ( ).setContactTestBitmask ( 0x08 ); // 1000
+			box.getPhysicsBody ( ).setCollisionBitmask ( 0x01 );   // 0001
+//			root.addChild ( box );
+			root.addChildEx ( box );
 		}
 
 		// yellow triangle, will collide with itself and blue box.
-		for (int i = 0; i < _yellowTriangleNum; ++i)
+		for ( var i = 0; i < this._yellowTriangleNum; ++i )
 		{
-			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect.size ( );
-			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
-			position.x = position.x * CCRANDOM_0_1();
-			position.y = position.y * CCRANDOM_0_1();
-			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
-			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
-			var 	triangle = makeTriangle(position, size, 1, PhysicsMaterial(0.1, 1, 0.0 ) );
+			var 	size = cc.size ( 10 + cc.random0To1 ( ) * 10, 10 + cc.random0To1 ( ) * 10 );
+			var 	winSize = VisibleRect.size ( );
+			var 	position = cp.v.sub ( cp.v ( winSize.width, winSize.height ), cp.v ( size.width, size.height ) );
+			position.x = position.x * cc.random0To1 ( );
+			position.y = position.y * cc.random0To1 ( );
+			position = cp.v.add ( cp.v.add ( VisibleRect.leftBottom ( ), position ), cp.v ( size.width / 2, size.height / 2 ) );
+			var 	velocity = cp.v ( ( cc.random0To1 ( ) - 0.5 ) * 300, ( cc.random0To1 ( ) - 0.5 ) * 300 );
+			var 	triangle = this.makeTriangle ( position, size, 1, cc.PhysicsMaterial ( 0.1, 1, 0.0 ) );
 			triangle.getPhysicsBody ( ).setVelocity ( velocity);
-			triangle.getPhysicsBody ( ).setCategoryBitmask(0x04);    // 0100
-			triangle.getPhysicsBody ( ).setContactTestBitmask(0x01); // 0001
-			triangle.getPhysicsBody ( ).setCollisionBitmask(0x06);   // 0110
-			root->addChild(triangle);
+			triangle.getPhysicsBody ( ).setCategoryBitmask ( 0x04 );    // 0100
+			triangle.getPhysicsBody ( ).setContactTestBitmask ( 0x01 ); // 0001
+			triangle.getPhysicsBody ( ).setCollisionBitmask ( 0x06);   	// 0110
+//			root.addChild ( triangle );
+			root.addChildEx ( triangle );
 		}
 
 		// blue triangle, will collide with yellow box.
-		for (int i = 0; i < _blueTriangleNum; ++i)
+		for ( var i = 0; i < this._blueTriangleNum; ++i )
 		{
-			Size size(10 + CCRANDOM_0_1()*10, 10 + CCRANDOM_0_1()*10 );
-			Size winSize = VisibleRect.size ( );
-			cp.v position = cp.v ( winSize.width, winSize.height) - cp.v ( size.width, size.height);
-			position.x = position.x * CCRANDOM_0_1();
-			position.y = position.y * CCRANDOM_0_1();
-			position = VisibleRect.leftBottom ( ) + position + cp.v ( size.width/2, size.height/2);
-			Vect velocity((CCRANDOM_0_1() - 0.5)*300, (CCRANDOM_0_1() - 0.5)*300 );
-			var 	triangle = makeTriangle(position, size, 2, PhysicsMaterial(0.1, 1, 0.0 ) );
-			triangle.getPhysicsBody ( ).setVelocity ( velocity);
-			triangle.getPhysicsBody ( ).setCategoryBitmask(0x08);    // 1000
-			triangle.getPhysicsBody ( ).setContactTestBitmask(0x02); // 0010
-			triangle.getPhysicsBody ( ).setCollisionBitmask(0x01);   // 0001
-			root->addChild(triangle);
+			var 	size = cc.size ( 10 + cc.random0To1 ( ) * 10, 10 + cc.random0To1 ( ) * 10 );
+			var 	winSize = VisibleRect.size ( );
+			var 	position = cp.v.sub ( cp.v ( winSize.width, winSize.height ), cp.v ( size.width, size.height ) );
+			position.x = position.x * cc.random0To1 ( );
+			position.y = position.y * cc.random0To1 ( );
+			position = cp.v.add ( cp.v.add ( VisibleRect.leftBottom ( ), position ), cp.v ( size.width / 2, size.height / 2 ) );
+			var 	velocity = cp.v ( ( cc.random0To1 ( ) - 0.5 ) * 300, ( cc.random0To1 ( ) - 0.5 ) * 300 );
+			var 	triangle = this.makeTriangle ( position, size, 2, cc.PhysicsMaterial ( 0.1, 1, 0.0 ) );
+			triangle.getPhysicsBody ( ).setVelocity ( velocity );
+			triangle.getPhysicsBody ( ).setCategoryBitmask ( 0x08 );    // 1000
+			triangle.getPhysicsBody ( ).setContactTestBitmask ( 0x02 ); // 0010
+			triangle.getPhysicsBody ( ).setCollisionBitmask ( 0x01 );   // 0001
+//			root.addChild ( triangle );
+			root.addChildEx ( triangle );
 		}
-	}
+	},
 
-	bool PhysicsContactTest::onContactBegin(PhysicsContact& contact)
+	onContactBegin:function ( contact )
 	{
+		/*
 		PhysicsBody* a = contact.getShapeA().getBody();
 		PhysicsBody* b = contact.getShapeB().getBody();
 		PhysicsBody* body = (a.getCategoryBitmask() == 0x04 || a.getCategoryBitmask() == 0x08) ? a : b;
 		CC_UNUSED_PARAM(body);
 		CC_ASSERT(body.getCategoryBitmask() == 0x04 || body.getCategoryBitmask() == 0x08);
+		*/
 
 		return true;
 	}
 
-	*/
+	
 });
 
 /////////////////////////////////////////////
