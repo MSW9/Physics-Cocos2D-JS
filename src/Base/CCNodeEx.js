@@ -232,9 +232,9 @@ cc.Node.prototype.removeChildEx = function ( child, cleanup )
 {
 	if ( cleanup === undefined ) cleanup = true;
 
-	if ( this._physicsBody != null )
+	if ( child._physicsBody != null )
 	{
-		this._physicsBody.removeFromWorld ( );
+		child._physicsBody.removeFromWorld ( );
 	}
 	
 	this.removeChild ( child, cleanup );

@@ -158,8 +158,8 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 			mouse.setPhysicsBody ( cc.PhysicsBody.create ( cc.PHYSICS_INFINITY, cc.PHYSICS_INFINITY ) );
 			mouse.getPhysicsBody ( ).setDynamic ( false );
 			mouse.setPosition ( location );
-			this.addChild ( mouse );
-//			this.addChildEx ( mouse );
+//			this.addChild ( mouse );
+			this.addChildEx ( mouse );
 						
 			var 	joint = cc.PhysicsJointPin.create ( mouse.getPhysicsBody ( ), body, location );
 			joint.setMaxForce ( 5000.0 * body.getMass ( ) );

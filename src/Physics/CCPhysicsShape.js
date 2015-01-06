@@ -899,7 +899,7 @@ cc.PhysicsShapeEdgePolygon = cc.PhysicsShape.extend
 		}
 		else
 		{
-			verts = new Array ( points.length / 2 );
+			verts = new Array ( );
 			for ( var i = 0; i < points.length; i += 2 )
 			{
 				verts.push ( cp.v ( points [ i ], points [ i + 1 ] ) );	
@@ -1071,7 +1071,7 @@ cc.PhysicsShapeEdgeChain = cc.PhysicsShapeEdgePolygon.extend
 		}
 		else
 		{
-			verts = new Array ( points.length / 2 );
+			verts = new Array ( );
 			for ( var i = 0; i < points.length; i += 2 )
 			{
 				verts.push ( cp.v ( points [ i ], points [ i + 1 ] ) );	

@@ -35,7 +35,7 @@ cc.game.onStart = function ( )
 
 	cc.LoaderScene.preload ( RESOURCES, function ( ) 
 	{
-		var		scene = new PhysicsTestScene ( );	
+		var		scene = new PhysicsTestScene ( );			
 		scene.runThisTest ( );		
 	}, this );
 };
