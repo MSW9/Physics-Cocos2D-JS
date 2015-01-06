@@ -3,9 +3,6 @@ Physics-Cocos2D-JS
 - physics extension port of Cocos2D-JS.
 - this is currently an alpha version. ( it will be soon completed. )
 
-# Original 
-- https://github.com/MSW9/Physics-Cocos2D-JS
-
 # Usage
 - Use Cocos2D-IDE and Import this project root folder.
 
