@@ -6,7 +6,7 @@ Physics-Cocos2D-JS
 # Usage
 - Use Cocos2D-IDE and Import this project root folder.
 
-# Web Demo
+# Demo
 - [Demo Content](http://msw9.com/contents/Cocos2D-Physics/)
 - [Full Screen](http://msw9.com/contents/Cocos2D-Physics/main.html)
 - [Homepage : http://msw9.com](http://msw9.com)
