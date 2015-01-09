@@ -35,36 +35,15 @@ cc.PhysicsWorldCallback =
 	continues : false,
 	
 	collisionBeginCallbackFunc:function ( arb, space )
-	{
-		var		map    = cc.PhysicsShapeInfo.getMap ( );
+	{				
 		var 	shapes = arb.getShapes ( );
-		var		a      = null;
-		var		b      = null; 
+		var		a      = shapes [ 0 ].userdata.getShape ( );
+		var		b      = shapes [ 1 ].userdata.getShape ( );
 		
-		for ( var i = 0; i < map.length; i++ )
-		{
-			if ( shapes [ 0 ] == map [ i ].key )
-			{
-				a = map [ i ].value.getShape ( );
-			}
-			
-			if ( shapes [ 1 ] == map [ i ].key )
-			{
-				b = map [ i ].value.getShape ( );
-			}	
-			
-			if ( a && b )
-			{
-				var		contact = new cc.PhysicsContact ( a, b );
-				arb.data = contact;
-				contact._contactInfo = arb;				
-				return this.collisionBeginCallback ( contact );
-			}
-		}
-		
-		cc.log ( "Error" );
-		
-		return false;
+		var		contact = new cc.PhysicsContact ( a, b );
+		arb.data = contact;
+		contact._contactInfo = arb;				
+		return this.collisionBeginCallback ( contact );
 	},
 
 	collisionPreSolveCallbackFunc:function ( arb, space )
@@ -79,6 +58,7 @@ cc.PhysicsWorldCallback =
 	
 	collisionPostSolveCallbackFunc:function ( arb, space )
 	{
+		return;
 		if ( arb.data === undefined )
 		{
 			return;
@@ -86,9 +66,10 @@ cc.PhysicsWorldCallback =
 		
 		this.collisionPostSolveCallback ( arb.data );
 	},
-	
+
 	collisionSeparateCallbackFunc:function ( arb, space )
 	{
+		return;
 		if ( arb.data === undefined )
 		{
 			return true;
@@ -102,13 +83,27 @@ cc.PhysicsWorldCallback =
 
 cc.PhysicsWorldCallback.continues = true;
 
+	
+
 /**
  * @brief An PhysicsWorld object simulates collisions and other physical properties. You do not create PhysicsWorld objects directly; instead, you can get it from an Scene object.
  */
 cc.PhysicsWorld = cc.Class.extend
 ({		
+	_TempBug : null,
+	
 	ctor:function ( scene ) 
 	{
+		/////////////////////////////////////
+		// Avoid Bug - Temporary code.
+		if ( cc.PhysicsWorld_TempBug != null )
+		{
+			cc.PhysicsWorld_TempBug._info.getSpace ( ).setDefaultCollisionHandler ( null, null, null, null );
+		}		
+		cc.PhysicsWorld_TempBug = this;
+		///////////////////////////////
+		
+		
 		this._gravity			= cp.v ( 0, -98.0 );
 		this._speed				= 1;
 		this._updateRate		= 1;
@@ -135,8 +130,9 @@ cc.PhysicsWorld = cc.Class.extend
 	},
 	
 	init:function ( scene )
-	{
+	{		
 		this._info = new cc.PhysicsWorldInfo ( );
+		temp = this._info;
 		
 		this._scene = scene;
 
@@ -145,9 +141,6 @@ cc.PhysicsWorld = cc.Class.extend
 		this._debugDraw = new cc.PhysicsDebugNode ( this._info._space );
 		this._debugDraw.setVisible ( false );
 		this._scene.addChild ( this._debugDraw, 1 );	
-		
-		// Temporary Code
-		return true;
 		
 		this._info.getSpace ( ).setDefaultCollisionHandler 
 		(
@@ -158,6 +151,11 @@ cc.PhysicsWorld = cc.Class.extend
 		);
 		
 		return true;
+	},
+	
+	release:function ( )
+	{
+		this._info.getSpace ( ).setDefaultCollisionHandler ( null, null, null, null );		
 	},
 
 	/** Adds a joint to the physics world.*/
@@ -384,28 +382,15 @@ cc.PhysicsWorld = cc.Class.extend
 	{
 
 	},
-	
+
 	/** Get phsyics shapes that contains the point. */
 	getShapes:function ( point ) 
 	{
-	    var 	shapes = new Array ( );
+		var 	shapes = new Array ( );
 
-        this._info._space.nearestPointQuery ( point, 0, cp.ALL_LAYERS, cp.NO_GROUP, function ( shape, distance, point )
+		this._info._space.nearestPointQuery ( point, 0, cp.ALL_LAYERS, cp.NO_GROUP, function ( shape, distance, point )
         {
-        	var		shapeInfos = cc.PhysicsShapeInfo.getMap ( );
-        	
-        	for ( var i = 0; i < shapeInfos.length; i++ )
-        	{        	
-        		var		shapeInfo = shapeInfos [ i ];
-        		if ( shapeInfo.key == shape )
-        		{
-        			//cc.log ( "Shape id : " + i );
-        			shapes.push ( shapeInfo.value.getShape ( ) );
-        			return;
-        		}        		
-        	}
-        	
-        	cc.assert ( false, "no existed shape in PhysicsShapInfos." );        	        	
+        	shapes.push ( shape.userdata.getShape ( ) );        		        	        	
         });
 	    
 	    return shapes;		
@@ -416,17 +401,8 @@ cc.PhysicsWorld = cc.Class.extend
 	{
 		var 	info = this._info._space.nearestPointQueryNearest ( point, 0, cp.ALL_LAYERS, cp.NO_GROUP );		
 		if ( info )
-		{							
-			var		shapeInfos = cc.PhysicsShapeInfo.getMap ( );
-        	for ( var i = 0; i < shapeInfos.length; i++ )
-        	{        	
-        		var		shapeInfo = shapeInfos [ i ];
-        		if ( shapeInfo.key == info.shape )
-        		{
-        			//cc.log ( "Shape id : " + i );
-        			return shapeInfo.value.getShape ( );
-        		}
-        	}
+		{				
+        	return info.shape.userdata.getShape ( );        		
 		}
 		
 		return null;
