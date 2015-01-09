@@ -58,7 +58,6 @@ cc.PhysicsWorldCallback =
 	
 	collisionPostSolveCallbackFunc:function ( arb, space )
 	{
-		return;
 		if ( arb.data === undefined )
 		{
 			return;
@@ -69,7 +68,6 @@ cc.PhysicsWorldCallback =
 
 	collisionSeparateCallbackFunc:function ( arb, space )
 	{
-		return;
 		if ( arb.data === undefined )
 		{
 			return true;
@@ -667,14 +665,14 @@ cc.PhysicsWorld = cc.Class.extend
 		for ( var idx in jointsA )
 		{
 			var		joint = jointsA [ idx ];
-			
+
 			var		idx2 = this._joints.indexOf ( joint );
 			if ( idx == -1 )
 			{
 				continue;
 	        }
 	        
-	        if ( !joint.isCollisionEnabled ( ) )
+			if ( !joint.isCollisionEnabled ( ) )
 	        {
 	        	var 	body = joint.getBodyA ( ) == bodyA ? joint.getBodyB ( ) : joint.getBodyA ( );
 	            
@@ -687,8 +685,8 @@ cc.PhysicsWorld = cc.Class.extend
 	    }
 
 	    // bitmask check
-	    if ( ( shapeA.getCategoryBitmask ( ) & shapeB.getContactTestBitmask ( ) ) == 0 ||
-	    	 ( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
+		if ( ( shapeA.getCategoryBitmask ( ) & shapeB.getContactTestBitmask ( ) ) == 0 ||
+				( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
 	    {
 	        contact.setNotificationEnable ( false );
 	    }
@@ -700,8 +698,8 @@ cc.PhysicsWorld = cc.Class.extend
 	    else
 	    {
 	    	if ( ( shapeA.getCategoryBitmask ( ) & shapeB.getCollisionBitmask ( ) ) == 0 ||
-	        	 ( shapeB.getCategoryBitmask ( ) & shapeA.getCollisionBitmask ( ) ) == 0 )
-	        {
+	    		 ( shapeB.getCategoryBitmask ( ) & shapeA.getCollisionBitmask ( ) ) == 0 )
+	    	{
 	            ret = false;
 	        }
 	    }
@@ -711,6 +709,7 @@ cc.PhysicsWorld = cc.Class.extend
 	        contact.setEventCode ( cc.PhysicsContact.EventCode.BEGIN );
 	        contact.setWorld ( this );
 //	        this._scene.getEventDispatcher ( ).dispatchEvent ( contact );
+	        cc.eventManager.dispatchCustomEvent ( cc.PHYSICSCONTACT_EVENT_NAME, contact );
 	    }
 	    
 	    return ret ? contact.resetResult ( ) : false;	    
@@ -727,6 +726,7 @@ cc.PhysicsWorld = cc.Class.extend
 		contact.setEventCode ( cc.PhysicsContact.EventCode.PRESOLVE );
 		contact.setWorld ( this );
 //		this._scene.getEventDispatcher ( ).dispatchEvent ( contact );
+		cc.eventManager.dispatchCustomEvent ( cc.PHYSICSCONTACT_EVENT_NAME, contact );
 
 		return contact.resetResult ( );		
 	},
@@ -740,7 +740,8 @@ cc.PhysicsWorld = cc.Class.extend
 
 		contact.setEventCode ( cc.PhysicsContact.EventCode.POSTSOLVE );
 		contact.setWorld ( this );
-//		this._scene.getEventDispatcher ( ).dispatchEvent ( contact );		
+//		this._scene.getEventDispatcher ( ).dispatchEvent ( contact );	
+		cc.eventManager.dispatchCustomEvent ( cc.PHYSICSCONTACT_EVENT_NAME, contact );
 	},
 	
 	collisionSeparateCallback:function ( contact )
@@ -752,7 +753,8 @@ cc.PhysicsWorld = cc.Class.extend
 
 		contact.setEventCode ( cc.PhysicsContact.EventCode.SEPERATE );
 		contact.setWorld ( this );
-//		this._scene.getEventDispatcher ( ).dispatchEvent ( contact );			
+//		this._scene.getEventDispatcher ( ).dispatchEvent ( contact );	
+		cc.eventManager.dispatchCustomEvent ( cc.PHYSICSCONTACT_EVENT_NAME, contact );
 	},
 
 	doAddBody:function ( body )

@@ -33,7 +33,7 @@ var PhysicsTestScene = cc.Scene.extend
 				
 		this.initWithPhysics ( );		
 	},
-	
+
 	runThisTest:function ( num )
 	{	
 		physicsTestSceneIdx = ( num || num == 0 ) ? ( num - 1 ) : -1;
@@ -158,7 +158,6 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 			mouse.setPhysicsBody ( cc.PhysicsBody.create ( cc.PHYSICS_INFINITY, cc.PHYSICS_INFINITY ) );
 			mouse.getPhysicsBody ( ).setDynamic ( false );
 			mouse.setPosition ( location );
-//			this.addChild ( mouse );
 			this.addChildEx ( mouse );
 						
 			var 	joint = cc.PhysicsJointPin.create ( mouse.getPhysicsBody ( ), body, location );
@@ -189,7 +188,6 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		{
 			if ( this._mouses [ i ].first == touch.getID ( ) )
 			{
-//				this.removeChild ( this._mouses [ i ].second );
 				this.removeChildEx ( this._mouses [ i ].second );
 				this._mouses.splice ( i, 1 );
 				i--;
@@ -277,9 +275,8 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		var 	body = cc.PhysicsBody.createBox ( size, material );
 		box.setPhysicsBody ( body );
 		box.setPosition ( point );
-
-		return box;
 		
+		return box;		
 	},
 	
 	makeTriangle:function ( point, size, color, material )
@@ -336,7 +333,6 @@ var PhysicsBaseLayer = cc.LayerGradient.extend
 		var 	sp = new cc.Sprite ( this._spriteTexture, cc.rect ( posx, posy, 85, 121 ) );
 		sp.setScale ( scale );
 		sp.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( 48.0 * scale, 108.0 * scale ) ) );
-//		this.addChild ( sp );
 		this.addChildEx ( sp );
 		sp.setPosition ( p );
 
@@ -434,7 +430,6 @@ PhysicsDemoLogoSmash = ( function ( )
 						ball.getPhysicsBody ( ).setMass ( 1.0 );
 						ball.getPhysicsBody ( ).setMoment ( cc.PHYSICS_INFINITY );
 
-//						this._ball.addChild ( ball );
 //						this._ball.addChildEx ( ball );
 						this._scene.addChild ( ball );
 					}
@@ -444,7 +439,6 @@ PhysicsDemoLogoSmash = ( function ( )
 			var 	bullet = this.makeBall ( cp.v ( 400, 0 ), 10, cc.PhysicsMaterial ( cc.PHYSICS_INFINITY, 0, 0 ) );
 			bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 200, 0 ) );	   
 			bullet.setPosition ( cp.v ( -500, VisibleRect.center ( ).y ) );	    
-//			this._ball.addChild ( bullet );
 //			this._ball.addChildEx ( bullet );	
 			this._scene.addChild ( bullet );
 		},		
@@ -467,16 +461,14 @@ PhysicsDemoPyramidStack = PhysicsBaseLayer.extend
 
 		var 	node = new cc.Node ( );
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
-//		this.addChild ( node );
 		this.addChildEx ( node );
-
+		
 		var 	ball = new cc.Sprite ( "res/Images/ball.png" );
 		ball.setScale ( 1 );
 		ball.setTag ( 100 );
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( 10 ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.setPosition ( cp.v.add ( VisibleRect.bottom ( ), cp.v ( 0, 60 ) ) );
-//		this.addChild ( ball, 0, 100 );		
 		this.addChildEx ( ball, 0, 100 );
 		
 		for ( var i = 0; i < 14; i++ )
@@ -521,7 +513,6 @@ PhysicsDemoClickAdd = PhysicsBaseLayer.extend
 		var 	node = new cc.Node ( );
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		node.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 
 		this.addGrossiniAtPosition ( VisibleRect.center ( ) );
@@ -571,7 +562,6 @@ PhysicsDemoRayCast = PhysicsBaseLayer.extend
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( line.s, line.e ) );			
 		//node->drawSegment(VisibleRect.leftBottom ( ) + cp.v ( 0, 50 ), VisibleRect.rightBottom ( ) + cp.v ( 0, 50 ), 1, STATIC_COLOR);
 		node.drawSegment ( line.s, line.e, 1, STATIC_COLOR );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 		
 		cc.MenuItemFont.setFontSize ( 18 );
@@ -630,7 +620,6 @@ PhysicsDemoRayCast = PhysicsBaseLayer.extend
 				obj = this.makeTriangle ( location, cc.size ( 10 + cc.random0To1 ( ) * 20, 10 + cc.random0To1 ( ) * 20 ) );
 			}		
 			
-//			this.addChild ( obj );
 			this.addChildEx ( obj );
 		}
 	},
@@ -758,7 +747,6 @@ PhysicsDemoJoints = PhysicsBaseLayer.extend
 		node.setPhysicsBody ( box );
 		box.setDynamic ( false );
 		node.setPosition ( cp.vzero );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 
 		for ( var i = 0; i < 4; ++i )
@@ -981,7 +969,6 @@ PhysicsDemoActions = PhysicsBaseLayer.extend
 		var 	node = new cc.Node ( );
 		node.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		node.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 
 		var 	sp1 = this.addGrossiniAtPosition ( VisibleRect.center ( ) );
@@ -1060,12 +1047,10 @@ PhysicsDemoPump = PhysicsBaseLayer.extend
 		{
 			var 	ball = this.makeBall ( cp.v.add ( VisibleRect.leftTop ( ), cp.v ( 75 + cc.random0To1 ( ) * 90, 0 ) ), 22, cc.PhysicsMaterial ( 0.05, 0.0, 0.1 ) );
 			ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//			this.addChild ( ball );
 			this.addChildEx ( ball );
 		}
 
 		node.setPhysicsBody ( body );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 		
 		var 	vec =
@@ -1083,7 +1068,6 @@ PhysicsDemoPump = PhysicsBaseLayer.extend
 		var 	sgearB = cc.PhysicsBody.createCircle ( 44 );
 		sgear.setPhysicsBody ( sgearB );
 		sgear.setPosition ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 125, 0 ) ) );
-//		this.addChild ( sgear );
 		this.addChildEx ( sgear );
 		sgearB.setCategoryBitmask  ( 0x04 );
 		sgearB.setCollisionBitmask ( 0x04 );
@@ -1095,7 +1079,6 @@ PhysicsDemoPump = PhysicsBaseLayer.extend
 		var 	bgearB = cc.PhysicsBody.createCircle ( 100 );
 		bgear.setPhysicsBody ( bgearB );
 		bgear.setPosition ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 275, 0 ) ) );
-//		this.addChild ( bgear );
 		this.addChildEx ( bgear );
 		bgearB.setCategoryBitmask ( 0x04 );
 		_world.addJoint ( cc.PhysicsJointPin.create ( body, bgearB, bgearB.getPosition ( ) ) );
@@ -1106,7 +1089,6 @@ PhysicsDemoPump = PhysicsBaseLayer.extend
 		pump.setPosition ( center );
 		var 	pumpB = cc.PhysicsBody.createPolygon ( vec, cc.PHYSICSBODY_MATERIAL_DEFAULT, cp.v.neg ( center ) );
 		pump.setPhysicsBody ( pumpB );
-//		this.addChild ( pump );
 		this.addChildEx ( pump );
 		
 		pumpB.setCategoryBitmask ( 0x02 );
@@ -1127,7 +1109,6 @@ PhysicsDemoPump = PhysicsBaseLayer.extend
 		pluggerB.setMoment ( 100000 );
 		plugger.setPhysicsBody ( pluggerB );
 		plugger.setPosition ( segCenter );
-//		this.addChild ( plugger );
 		this.addChildEx ( plugger );
 		
 		pluggerB.setCategoryBitmask ( 0x02 );
@@ -1214,13 +1195,11 @@ PhysicsDemoOneWayPlatform = PhysicsBaseLayer.extend
 
 		var 	ground = new cc.Node ( );
 		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
-//		this.addChild ( ground );
 		this.addChildEx ( ground );
 
 		var 	platform = this.makeBox ( VisibleRect.center ( ), cc.size ( 200, 50 ) );
 		platform.getPhysicsBody ( ).setDynamic ( false );
 		platform.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
-//		this.addChild ( platform );
 		this.addChildEx ( platform );
 
 		var 	ball = this.makeBall ( cp.v.sub ( VisibleRect.center ( ), cp.v ( 0, 50 ) ), 20 );
@@ -1228,14 +1207,12 @@ PhysicsDemoOneWayPlatform = PhysicsBaseLayer.extend
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setMass ( 1.0 );
 		ball.getPhysicsBody ( ).setContactTestBitmask ( 0xFFFFFFFF );
-//		this.addChild ( ball );
 		this.addChildEx ( ball );
 
-		/*
-		var 	contactListener = EventListenerPhysicsContactWithBodies::create(platform.getPhysicsBody(), ball.getPhysicsBody() );
-		contactListener->onContactBegin = CC_CALLBACK_1(PhysicsDemoOneWayPlatform::onContactBegin, this);
-		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
-		*/
+		var 	contactListener = new cc.EventListenerPhysicsContactWithBodies ( platform.getPhysicsBody ( ), ball.getPhysicsBody ( ) );
+		contactListener.onContactBegin = this.onContactBegin;		
+		//_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+		cc.eventManager.addCustomListener ( cc.PHYSICSCONTACT_EVENT_NAME, contactListener.onEvent.bind ( contactListener ) );
 	},
 	
 	onContactBegin:function ( contact )
@@ -1278,7 +1255,6 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 
 		var 	ground = new cc.Node ( );
 		ground.setPhysicsBody ( cc.PhysicsBody.createEdgeSegment ( cp.v.add ( VisibleRect.leftBottom ( ), cp.v ( 0, 50 ) ), cp.v.add ( VisibleRect.rightBottom ( ), cp.v ( 0, 50 ) ) ) );
-//		this.addChild ( ground );
 		this.addChildEx ( ground );
 
 		var 	box = new cc.Node ( );
@@ -1286,7 +1262,6 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 		box.setPhysicsBody ( cc.PhysicsBody.createPolygon ( points ) );
 		box.setPosition ( VisibleRect.center ( ) );
 		box.getPhysicsBody ( ).setTag ( this._sliceTag );
-//		this.addChild ( box );		
 		this.addChildEx ( box );	
 	},
 	
@@ -1349,7 +1324,6 @@ PhysicsDemoSlice = PhysicsBaseLayer.extend
 		polyon.setVelocity ( body.getVelocityAtWorldPoint ( center ) );
 		polyon.setAngularVelocity ( body.getAngularVelocity ( ) );
 		polyon.setTag ( this._sliceTag );
-//		this.addChild ( node );
 		this.addChildEx ( node );
 	},
 
@@ -1385,7 +1359,6 @@ PhysicsDemoBug3988 = PhysicsBaseLayer.extend
 
 		var 	physicsBall = this.makeBox ( cp.v.add ( VisibleRect.center ( ), cp.v ( 100, 0 ) ), cc.size ( 100, 100 ) );
 		physicsBall.setRotation ( 30.0 );
-//		this.addChild ( physicsBall );		
 		this.addChildEx ( physicsBall );		
 	}
 });
@@ -1537,12 +1510,12 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		root.addChild ( wall );
 		root.addChildEx ( wall );
 		
-//		var 	contactListener = EventListenerPhysicsContact::create();
-//		contactListener->onContactBegin = this.onContactBegin, this);
-//		_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+		var 	contactListener = new cc.EventListenerPhysicsContact ( );
+		contactListener.onContactBegin = this.onContactBegin;		
+		//_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+		cc.eventManager.addCustomListener ( cc.PHYSICSCONTACT_EVENT_NAME, contactListener.onEvent.bind ( contactListener ) );
 	
 		// yellow box, will collide with itself and blue box.
 		for ( var i = 0; i < this._yellowBoxNum; ++i )
@@ -1559,7 +1532,6 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 			box.getPhysicsBody ( ).setCategoryBitmask ( 0x01 );    // 0001
 			box.getPhysicsBody ( ).setContactTestBitmask ( 0x04 ); // 0100
 			box.getPhysicsBody ( ).setCollisionBitmask ( 0x03 );   // 0011
-//			root.addChild ( box );
 			root.addChildEx ( box );
 		}
 
@@ -1578,7 +1550,6 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 			box.getPhysicsBody ( ).setCategoryBitmask ( 0x02 );    // 0010
 			box.getPhysicsBody ( ).setContactTestBitmask ( 0x08 ); // 1000
 			box.getPhysicsBody ( ).setCollisionBitmask ( 0x01 );   // 0001
-//			root.addChild ( box );
 			root.addChildEx ( box );
 		}
 
@@ -1597,7 +1568,6 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 			triangle.getPhysicsBody ( ).setCategoryBitmask ( 0x04 );    // 0100
 			triangle.getPhysicsBody ( ).setContactTestBitmask ( 0x01 ); // 0001
 			triangle.getPhysicsBody ( ).setCollisionBitmask ( 0x06);   	// 0110
-//			root.addChild ( triangle );
 			root.addChildEx ( triangle );
 		}
 
@@ -1616,20 +1586,17 @@ PhysicsContactTest = PhysicsBaseLayer.extend
 			triangle.getPhysicsBody ( ).setCategoryBitmask ( 0x08 );    // 1000
 			triangle.getPhysicsBody ( ).setContactTestBitmask ( 0x02 ); // 0010
 			triangle.getPhysicsBody ( ).setCollisionBitmask ( 0x01 );   // 0001
-//			root.addChild ( triangle );
 			root.addChildEx ( triangle );
 		}
 	},
 
 	onContactBegin:function ( contact )
 	{
-		/*
-		PhysicsBody* a = contact.getShapeA().getBody();
-		PhysicsBody* b = contact.getShapeB().getBody();
-		PhysicsBody* body = (a.getCategoryBitmask() == 0x04 || a.getCategoryBitmask() == 0x08) ? a : b;
-		CC_UNUSED_PARAM(body);
-		CC_ASSERT(body.getCategoryBitmask() == 0x04 || body.getCategoryBitmask() == 0x08);
-		*/
+		var 	a = contact.getShapeA ( ).getBody ( );
+		var 	b = contact.getShapeB ( ).getBody ( );
+		var 	body = ( a.getCategoryBitmask ( ) == 0x04 || a.getCategoryBitmask ( ) == 0x08 ) ? a : b;
+		
+		cc.assert ( body.getCategoryBitmask ( ) == 0x04 || body.getCategoryBitmask ( ) == 0x08 );		
 
 		return true;
 	}
@@ -1666,7 +1633,6 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( wall );
 		this.addChildEx ( wall );
 
 		// anchor test
@@ -1674,7 +1640,6 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 		anchorNode.setAnchorPoint ( cp.v ( 0.1, 0.9 ) );
 		anchorNode.setPosition ( 100, 100 );
 		anchorNode.setScale ( 0.25 );
-//		this.addChild ( anchorNode );
 		this.addChildEx ( anchorNode );
 		anchorNode.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( anchorNode.getContentSize ( ).width * anchorNode.getScale ( ), anchorNode.getContentSize ( ).height * anchorNode.getScale ( ) ) ) );
 		anchorNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
@@ -1685,7 +1650,6 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 		parent.setScale ( 0.25 );
 		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( parent.getContentSize ( ).width * anchorNode.getScale ( ), parent.getContentSize ( ).height * anchorNode.getScale ( ) ) ) );
 		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		this.addChild ( parent );
 		this.addChildEx ( parent );		
 		
 		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
@@ -1693,7 +1657,6 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 		leftBall.setScale ( 2 );																			// ?
 		leftBall.setPhysicsBody ( cc.PhysicsBody.createCircle ( leftBall.getContentSize ( ).width / 4 ) );	// ?
 		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		parent.addChild ( leftBall );
 		parent.addChildEx ( leftBall );
 		
 		// offset position rotation test
@@ -1703,7 +1666,6 @@ PhysicsPositionRotationTest = PhysicsBaseLayer.extend
 		offsetPosNode.getPhysicsBody ( ).setPositionOffset ( cp.v ( -offsetPosNode.getContentSize ( ).width / 2, -offsetPosNode.getContentSize ( ).height / 2 ) );
 		offsetPosNode.getPhysicsBody ( ).setRotationOffset ( 45 );
 		offsetPosNode.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		this.addChild ( offsetPosNode );
 		this.addChildEx ( offsetPosNode );		
 	}
 });
@@ -1736,27 +1698,23 @@ PhysicsSetGravityEnableTest = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( wall );
 		this.addChildEx ( wall );
 		
 		// common box
 		var 	commonBox = this.makeBox ( cp.v ( 100, 100 ), cc.size ( 50, 50 ), 1 );
 		commonBox.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		this.addChild ( commonBox );
 		this.addChildEx ( commonBox );
 		
 		var 	box = this.makeBox ( cp.v ( 200, 100 ), cc.size ( 50, 50 ), 2 );
 		box.getPhysicsBody ( ).setMass ( 20 );
 		box.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		box.getPhysicsBody ( ).setGravityEnable ( false );
-//		this.addChild ( box );
 		this.addChildEx ( box );
 		
 		var 	ball = this.makeBall ( cp.v ( 200, 200 ), 50 );
 		ball.setTag ( 2 );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setGravityEnable ( false );
-//		this.addChild ( ball );
 		this.addChildEx ( ball );
 		ball.getPhysicsBody ( ).setMass ( 50 );
 		
@@ -1804,7 +1762,6 @@ Bug5482 = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( wall );
 		this.addChildEx ( wall );
 
 		// button
@@ -1816,12 +1773,10 @@ Bug5482 = PhysicsBaseLayer.extend
 
 		this._nodeA = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		this._nodeA.setPosition ( VisibleRect.center ( ).x - 150, 100 );
-//		this.addChild ( this._nodeA );
 		this.addChildEx ( this._nodeA );
 
 		this._nodeB = new cc.Sprite ( "res/Images/YellowSquare.png" );
 		this._nodeB.setPosition ( VisibleRect.center ( ).x + 150, 100 );
-//		this.addChild ( this._nodeB );
 		this.addChildEx ( this._nodeB );
 
 		this._body = cc.PhysicsBody.createBox ( this._nodeA.getContentSize ( ) );
@@ -1831,11 +1786,21 @@ Bug5482 = PhysicsBaseLayer.extend
 	
 	changeBodyCallback:function ( sender )
 	{
+		
 		var 	node = this._bodyInA ? this._nodeB : this._nodeA;
+
+		// retain problem. ( Temporary solution )	
+		{
+			var 	node2 = !this._bodyInA ? this._nodeB : this._nodeA;
+			node2.setPhysicsBody ( null );
+			
+			this._body = cc.PhysicsBody.createBox ( this._nodeA.getContentSize ( ) );
+			this._body.setTag ( DRAG_BODYS_TAG );
+		}
 		
 		node.setPhysicsBody ( this._body );
 
-		this._bodyInA = !this._bodyInA;
+		this._bodyInA = !this._bodyInA;		
 	}	
 	
 });
@@ -1862,7 +1827,6 @@ PhysicsFixedUpdate = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( wall );
 		this.addChildEx ( wall );
 
 		this.addBall ( );
@@ -1877,7 +1841,6 @@ PhysicsFixedUpdate = PhysicsBaseLayer.extend
 		ball.setPhysicsBody ( cc.PhysicsBody.createCircle ( ball.getContentSize ( ).width / 2, cc.PhysicsMaterial ( 0.1, 1, 0.0 ) ) );
 		ball.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		ball.getPhysicsBody ( ).setVelocity ( cp.v ( 1000, 20 ) );
-//		this.addChild ( ball );
 		this.addChildEx ( ball );
 	},
 	
@@ -1926,7 +1889,6 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 		var 	wall = new cc.Node ( );
 		wall.setPhysicsBody ( cc.PhysicsBody.createEdgeBox ( VisibleRect.size ( ), cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		wall.setPosition ( VisibleRect.center ( ) );
-//		this.addChild ( wall );
 		this.addChildEx ( wall );
 
 		//parent test
@@ -1936,7 +1898,6 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 		parent.setPhysicsBody ( cc.PhysicsBody.createBox ( cc.size ( parent.getContentSize ( ).width * parent.getScale ( ), parent.getContentSize ( ).height * parent.getScale ( ) ), cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		parent.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
 		parent.setTag ( 1 );
-//		this.addChild ( parent );
 		this.addChildEx ( parent );
 
 		var 	leftBall = new cc.Sprite ( "res/Images/ball.png" );
@@ -1944,7 +1905,6 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 		leftBall.setScale ( 2 );
 		leftBall.setPhysicsBody ( cc.PhysicsBody.createCircle ( leftBall.getContentSize ( ).width, cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		leftBall.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		parent.addChild ( leftBall );
 		parent.addChildEx ( leftBall );
 
 		var 	scaleTo = cc.scaleTo ( 2.0, 0.5 );
@@ -1959,14 +1919,12 @@ PhysicsTransformTest = PhysicsBaseLayer.extend
 		size.height *= normal.getScaleY ( );
 		normal.setPhysicsBody ( cc.PhysicsBody.createBox ( size, cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		normal.getPhysicsBody ( ).setTag ( DRAG_BODYS_TAG );
-//		this.addChild ( normal );
 		this.addChildEx ( normal );
 
 		var 	bullet = new cc.Sprite ( "res/Images/ball.png" );
 		bullet.setPosition ( 200, 200 );
 		bullet.setPhysicsBody ( cc.PhysicsBody.createCircle ( bullet.getContentSize ( ).width / 2, cc.PhysicsMaterial ( 0.1, 1.0, 0.0 ) ) );
 		bullet.getPhysicsBody ( ).setVelocity ( cp.v ( 100, 100 ) );
-//		this.addChild ( bullet );
 		this.addChildEx ( bullet );
 	
 		var 	move 	= cc.moveBy ( 2.0, cp.v (  100,  100 ) );

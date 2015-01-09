@@ -162,7 +162,7 @@ cc.PhysicsContact = cc.Class.extend
 
 		this._preContactData = this._contactData;
 		this._contactData = new cc.PhysicsContactData ( );
-		this._contactData.count = arb.contacts.length;
+		this._contactData.count = arb.getCount ( );
 		for ( var i = 0; i < this._contactData.count && i < cc.PhysicsContactData.POINT_MAX; ++i )
 		{
 			this._contactData.points [ i ] = arb.getPoint ( i );
@@ -265,7 +265,7 @@ cc.PhysicsContactPostSolve = cc.Class.extend
 
 /* contact listener. it will recive all the contact callbacks. */
 
-cc.EventListenerPhysicsContact = cc.Class.extend //public EventListenerCustom
+cc.EventListenerPhysicsContact = cc.Class.extend //cc.EventListener.extend //public EventListenerCustom
 ({
 	ctor:function ( )
 	{
@@ -273,21 +273,6 @@ cc.EventListenerPhysicsContact = cc.Class.extend //public EventListenerCustom
 		this.onContactPreSolve 	= null;
 		this.onContactPostSolve = null;
 		this.onContactSeperate	= null;
-		
-		this.init ( );
-	},
-	
-	init:function ( )
-	{
-		return true;
-		/*
-		var func = [this](EventCustom* event) -> void
-		{
-			onEvent(event);
-		};
-
-		return EventListenerCustom::init(PHYSICSCONTACT_EVENT_NAME, func);
-		*/
 	},
 	
 	checkAvailable:function ( )
@@ -323,8 +308,8 @@ cc.EventListenerPhysicsContact = cc.Class.extend //public EventListenerCustom
 	},
 	
 	onEvent:function ( event )
-	{
-		var 	contact = event;
+	{		
+		var 	contact = event.getUserData ( );
 
 		if ( contact == null )
 		{
@@ -354,8 +339,7 @@ cc.EventListenerPhysicsContact = cc.Class.extend //public EventListenerCustom
 				if ( this.onContactPreSolve != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
 				{
 					var		solve = new cc.PhysicsContactPreSolve ( contact._contactInfo );
-					contact.generateContactData ( );
-	
+					contact.generateContactData ( );	
 					ret = this.onContactPreSolve ( contact, solve );
 				}
 	
