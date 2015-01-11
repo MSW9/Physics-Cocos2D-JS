@@ -81,13 +81,13 @@ cc.PhysicsContact = cc.Class.extend
 	{
 		return this._shapeB; 
 	},
-	
+
 	/** get contact data */
 	getContactData:function ( ) 
 	{
 		return this._contactData; 
 	},
-	
+
 	/** get previous contact data */
 	getPreContactData:function ( ) 
 	{
@@ -158,11 +158,12 @@ cc.PhysicsContact = cc.Class.extend
 			return;
 		}
 
-		var 	arb = this._contactInfo;
-
+		var 	arb = this._contactInfo;		
+		
 		this._preContactData = this._contactData;
 		this._contactData = new cc.PhysicsContactData ( );
-		this._contactData.count = arb.getCount ( );
+		this._contactData.count = cc.sys.isNative ? arb.getCount ( ) : arb.contacts.length;	
+		
 		for ( var i = 0; i < this._contactData.count && i < cc.PhysicsContactData.POINT_MAX; ++i )
 		{
 			this._contactData.points [ i ] = arb.getPoint ( i );
@@ -268,7 +269,7 @@ cc.PhysicsContactPostSolve = cc.Class.extend
 cc.EventListenerPhysicsContact = cc.Class.extend //cc.EventListener.extend //public EventListenerCustom
 ({
 	ctor:function ( )
-	{
+	{		
 		this.onContactBegin 	= null;
 		this.onContactPreSolve 	= null;
 		this.onContactPostSolve = null;
@@ -320,51 +321,51 @@ cc.EventListenerPhysicsContact = cc.Class.extend //cc.EventListener.extend //pub
 		{		
 			case cc.PhysicsContact.EventCode.BEGIN :
 			{
-				var 	ret = true;
-	
-				if ( this.onContactBegin != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
-				{
-					contact.generateContactData ( );
-					ret = this.onContactBegin ( contact );
+					var 	ret = true;
+		
+					if ( this.onContactBegin != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+					{
+						contact.generateContactData ( );
+						ret = this.onContactBegin ( contact );
+					}
+		
+					contact.setResult ( ret );
+					break;
 				}
-	
-				contact.setResult ( ret );
-				break;
-			}
-			
+				
 			case cc.PhysicsContact.EventCode.PRESOLVE :
-			{
-				var 	ret = true;
-	
-				if ( this.onContactPreSolve != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
 				{
-					var		solve = new cc.PhysicsContactPreSolve ( contact._contactInfo );
-					contact.generateContactData ( );	
-					ret = this.onContactPreSolve ( contact, solve );
+					var 	ret = true;
+		
+					if ( this.onContactPreSolve != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+					{
+						var		solve = new cc.PhysicsContactPreSolve ( contact._contactInfo );
+						contact.generateContactData ( );	
+						ret = this.onContactPreSolve ( contact, solve );
+					}
+		
+					contact.setResult ( ret );
+					break;
 				}
-	
-				contact.setResult ( ret );
-				break;
-			}
-			
-			case cc.PhysicsContact.EventCode.POSTSOLVE :
-			{
-				if ( this.onContactPostSolve != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+				
+				case cc.PhysicsContact.EventCode.POSTSOLVE :
 				{
-					var		solve = new cc.PhysicsContactPostSolve ( contact._contactInfo );					
-					this.onContactPostSolve ( contact, solve );
+					if ( this.onContactPostSolve != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+					{
+						var		solve = new cc.PhysicsContactPostSolve ( contact._contactInfo );					
+						this.onContactPostSolve ( contact, solve );
+					}
+					break;
 				}
-				break;
-			}
-			
-			case cc.PhysicsContact.EventCode.SEPERATE :
-			{
-				if ( this.onContactSeperate != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+				
+				case cc.PhysicsContact.EventCode.SEPERATE :
 				{
-					this.onContactSeperate ( contact );
+					if ( this.onContactSeperate != null && this.hitTest ( contact.getShapeA ( ), contact.getShapeB ( ) ) )
+					{
+						this.onContactSeperate ( contact );
+					}
+					break;
 				}
-				break;
-			}
 		}
 	},
 });
@@ -374,6 +375,8 @@ cc.EventListenerPhysicsContactWithBodies = cc.EventListenerPhysicsContact.extend
 ({
 	ctor:function ( bodyA, bodyB )
 	{
+		this._super ( );
+		
 		this._a = bodyA;
 		this._b = bodyB;
 	},
@@ -407,6 +410,8 @@ cc.EventListenerPhysicsContactWithShapes = cc.EventListenerPhysicsContact.extend
 ({
 	ctor:function ( shapeA, shapeB )
 	{
+		this._super ( );
+		
 		this._a = shapeA;
 		this._b = shapeB;
 	},
@@ -425,7 +430,7 @@ cc.EventListenerPhysicsContactWithShapes = cc.EventListenerPhysicsContact.extend
 	clone:function ( )
 	{
 		var 	obj = new cc.EventListenerPhysicsContactWithShapes ( this._a, this._b );
-
+		
 		obj.onContactBegin 		= this.onContactBegin;
 		obj.onContactPreSolve 	= this.onContactPreSolve;
 		obj.onContactPostSolve 	= this.onContactPostSolve;
@@ -441,6 +446,8 @@ cc.EventListenerPhysicsContactWithGroup = cc.EventListenerPhysicsContact.extend
 ({
 	ctor:function ( group )
 	{
+		this._super ( );
+		
 		this._group = group;
 	},
 	

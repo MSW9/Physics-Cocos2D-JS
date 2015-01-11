@@ -686,7 +686,7 @@ cc.PhysicsWorld = cc.Class.extend
 
 	    // bitmask check
 		if ( ( shapeA.getCategoryBitmask ( ) & shapeB.getContactTestBitmask ( ) ) == 0 ||
-				( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
+			 ( shapeA.getContactTestBitmask ( ) & shapeB.getCategoryBitmask ( ) ) == 0 )
 	    {
 	        contact.setNotificationEnable ( false );
 	    }
