@@ -1,16 +1,15 @@
 Physics-Cocos2D-JS
 =================
 - physics extension port of Cocos2D-JS.
-- this is currently an alpha version. ( it will be soon completed. )
+- this is currently an alpha version. (it will be soon completed.)
 
 # Usage
 - Use Cocos2D-IDE and Import this project root folder.
 
 # Demo
-- [Demo](http://msw9.com/contents/Cocos2D-Physics/)
-- [Full Screen](http://msw9.com/contents/Cocos2D-Physics/main.html)
-- [Homepage : http://msw9.com](http://msw9.com)
-- [Blog : http://blog.msw9.com](http://blog.msw9.com)
+- [Demo](http://mcodegeeks.com/wp-content/uploads/contents/Cocos2D-Physics/)
+- [Full Screen](http://mcodegeeks.com/wp-content/uploads/contents/Cocos2D-Physics/main.html)
+- [Homepage : http://mcodegeeks.com](http://mcodegeeks.com)
 
 # Preview 
 ![](https://github.com/MSW9/Physics-Cocos2D-JS/blob/master/snapshot/snapshot1.png)
